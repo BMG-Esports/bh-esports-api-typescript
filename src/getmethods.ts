@@ -88,14 +88,14 @@ export class DBService {
       // const key = gameMode === 1 ? "pr1v1" : "pr2v2";
       const { pr, earnings } = res.data;
       return {
-        pr: pr?.powerRanking || 0,
-        earnings: earnings || 0,
-        top8: pr?.top8 || 0,
-        top32: pr?.top32 || 0,
-        gold: pr?.gold || 0,
-        silver: pr?.silver || 0,
-        bronze: pr?.bronze || 0,
-        region: pr?.region || "",
+        powerRanking: pr?.powerRanking,
+        earnings: earnings,
+        top8: pr?.top8,
+        top32: pr?.top32,
+        gold: pr?.gold,
+        silver: pr?.silver,
+        bronze: pr?.bronze,
+        region: pr?.region,
       };
     } catch (e) {
       throw new BackendError("Error when fetching player PR.", "DB", true, e);

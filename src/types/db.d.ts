@@ -14,6 +14,7 @@ export type GetPlayerResponse = {
     bronze: number;
     powerRanking: number;
     region: string;
+    earnings: number;
   };
   
   export type PlayerPR = {
