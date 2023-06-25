@@ -6,7 +6,8 @@ export type GetPlayerResponse = {
     };
   };
   
-  export type PRInformation = {
+
+  export type PRInformationResponse = {
     top8: number;
     top32: number;
     gold: number;
@@ -14,29 +15,28 @@ export type GetPlayerResponse = {
     bronze: number;
     powerRanking: number;
     region: string;
-    earnings: number;
   };
   
-  export type PlayerPR = {
+  export type PlayerPRResponse = {
     earnings: number;
-    pr: PRInformation;
+    pr: PRInformationResponse;
   };
   
-  export type PlayerLegend = {
+  export type PlayerLegendResponse = {
     legend: {
       name: string;
       count: number;
     };
   };
   
-  export type Matchup = {
+  export type MatchupResponse = {
     matchups: {
       matches: [number, number];
       games: [number, number];
     }[];
   };
   
-  export type PlayerPlacements = {
+  export type PlayerPlacementsResponse = {
     playerPlacements: {
       placement: number;
       tournament: {
@@ -45,7 +45,7 @@ export type GetPlayerResponse = {
     }[];
   };
   
-  export type PlayerMatches = {
+  export type PlayerMatchesResponse = {
     playerMatches: {
       matchId: number;
       scores: [number, number];
