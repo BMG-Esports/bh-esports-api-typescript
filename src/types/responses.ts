@@ -141,8 +141,11 @@ export type GetPlayerResponse = {
     }[];
   }
 
+
+  /* TODO: each type of stat returns different json
+  */ 
   export type GetStatsResponse = {
-    stats: number[];
+    stats: string[];
   }
 
   export type GetPRResponse = {
