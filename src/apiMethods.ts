@@ -96,7 +96,9 @@ export class DBService {
     }
   }
 
-  // TODO: Migrate getMatchup to the new API.
+    /**
+   * Fetch matchup between players.
+   */
   async getMatchup(params: Params.GetMatchupParams): Promise<[number, number]> {
     try {
       const res = await this.runQuery<DB.MatchupResponse>(
@@ -125,6 +127,9 @@ export class DBService {
     }
   }
 
+    /**
+   * Fetch a player's info by smashId - smashId, brawlhallaId, name
+   */
   async getPlayer(params: Params.GetPlayerParams) {
     try {
       const res = await this.runQuery<DB.GetPlayerResponse>(
@@ -148,6 +153,10 @@ export class DBService {
     }
   }
 
+    /**
+   * Fetch a player's info by brawlhallaId.
+   * Returns - smashId, brawlhallaId, name
+   */
   async getPlayerBrawlhallaId(params: Params.GetBrawlhallaPlayerParams) {
     try {
       const res = await this.runQuery<DB.GetPlayerResponse>(
@@ -171,6 +180,9 @@ export class DBService {
     }
   }
 
+      /**
+   * Fetch a player's placements in tournaments by game mode.
+   */
   async getPlayerEvents(params: Params.GetPlayerEventsParams) {
     try {
       const res = await this.runQuery<DB.PlayerPlacementsResponse>(
@@ -193,6 +205,9 @@ export class DBService {
     }
   }
 
+      /**
+   * Fetch a player's matches in the given event slug.
+   */
   async getPlayerEventMatches(params: Params.GetPlayerEventMatchesParams) {
     try {
       const res = await this.runQuery<DB.PlayerMatchesResponse>(
@@ -215,6 +230,9 @@ export class DBService {
     }
   }
 
+      /**
+   * Fetch a player's teammates.
+   */
   async getPlayerTeammates(params: Params.GetPlayerTeammatesParams) {
     try {
       const res = await this.runQuery<DB.TeammateResponse>(
@@ -237,6 +255,10 @@ export class DBService {
     }
   }
 
+
+    /**
+   * Fetch all players for given smashIds.
+   */
   async getSmashPlayerList(params: Params.GetPlayerListSmashIdParams) {
     try {
       const res = await this.runQuery<DB.PlayerListResponse>(
@@ -259,6 +281,9 @@ export class DBService {
     }
   }
 
+      /**
+   * Fetch all players for given brawlhallaId.
+   */
   async getBhPlayerList(params: Params.GetPlayerListBhIdParams) {
     try {
       const res = await this.runQuery<DB.PlayerListResponse>(
@@ -282,6 +307,9 @@ export class DBService {
   }
 
 
+      /**
+   * Fetch all of a player's legends in a given year.
+   */
   async getPlayerLegends(params: Params.GetPlayerLegendsParams) {
     try {
       const res = await this.runQuery<DB.PlayerLegendsResponse>(
@@ -304,6 +332,9 @@ export class DBService {
     }
   }
 
+      /**
+   * Search for a player.
+   */
   async searchPlayers(params: Params.SearchPlayersParam) {
     try {
       const res = await this.runQuery<DB.SearchPlayersResponse>(
@@ -326,6 +357,9 @@ export class DBService {
     }
   }
 
+      /**
+   * Fetch placement info for matchup between given players.
+   */
   async getMatchupPlacements(params: Params.GetMatchupParams) {
     try {
       const res = await this.runQuery<DB.MatchupPlacementsResponse>(
@@ -348,7 +382,9 @@ export class DBService {
     }
   }
   
-
+    /**
+   * Fetch match info for matchup between given players.
+   */
   async getMatchupMatches(params: Params.GetMatchupMatchesParam) {
     try {
       const res = await this.runQuery<DB.MatchupMatchesResponse>(
@@ -371,6 +407,9 @@ export class DBService {
     }
   }
 
+      /**
+   * Fetch all events in a given game mode.
+   */
   async getEventsList(params: Params.ListEventsParams) {
     try {
       const res = await this.runQuery<DB.ListEventsResponse>(
@@ -393,6 +432,9 @@ export class DBService {
     }
   }
 
+      /**
+   * Fetch a list of requested stat.
+   */
   async getStat(params: Params.GetStatParams) {
     try {
       const res = await this.runQuery<DB.GetStatsResponse>(
@@ -415,6 +457,9 @@ export class DBService {
     }
   }
 
+      /**
+   * Fetch all PRs for a given game mode and region.
+   */
   async getPRList(params: Params.GetPRParams) {
     try {
       const res = await this.runQuery<DB.GetPRResponse>(
