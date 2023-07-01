@@ -1,4 +1,4 @@
-import * as DB from "./types/db";
+import * as DB from "./types/responses";
 import * as Params from "./types/params"
 import axios, { AxiosResponse } from "axios";
 import { BackendError } from "./errors";
@@ -214,4 +214,227 @@ export class DBService {
       );
     }
   }
+
+  async getPlayerTeammates(params: Params.GetPlayerTeammatesParams) {
+    try {
+      const res = await this.runQuery<DB.TeammateResponse>(
+        `/player/teammate`,
+        "post",
+        { smashId: params.smashId, isOfficial: true },
+      );
+      if (res.status === 404) {
+        return [];
+      }
+
+      return res.data;
+    } catch (e) {
+      throw new BackendError(
+        "Error when fetching player tournament matches",
+        "DB",
+        true,
+        e
+      );
+    }
+  }
+
+  async getSmashPlayerList(params: Params.GetPlayerListSmashIdParams) {
+    try {
+      const res = await this.runQuery<DB.PlayerListResponse>(
+        `/players`,
+        "post",
+        { smashIds: params.smashIds },
+      );
+      if (res.status === 404) {
+        return [];
+      }
+
+      return res.data;
+    } catch (e) {
+      throw new BackendError(
+        "Error when fetching player tournament matches",
+        "DB",
+        true,
+        e
+      );
+    }
+  }
+
+  async getBhPlayerList(params: Params.GetPlayerListBhIdParams) {
+    try {
+      const res = await this.runQuery<DB.PlayerListResponse>(
+        `/players`,
+        "post",
+        { smashIds: params.bhIds },
+      );
+      if (res.status === 404) {
+        return [];
+      }
+
+      return res.data;
+    } catch (e) {
+      throw new BackendError(
+        "Error when fetching player tournament matches",
+        "DB",
+        true,
+        e
+      );
+    }
+  }
+
+
+  async getPlayerLegends(params: Params.GetPlayerLegendsParams) {
+    try {
+      const res = await this.runQuery<DB.PlayerLegendsResponse>(
+        `/player/legend`,
+        "post",
+        { entrantSmashIds: [params.entrantSmashId], isOfficial: true, year: params.year },
+      );
+      if (res.status === 404) {
+        return [];
+      }
+
+      return res.data;
+    } catch (e) {
+      throw new BackendError(
+        "Error when fetching player tournament matches",
+        "DB",
+        true,
+        e
+      );
+    }
+  }
+
+  async searchPlayers(params: Params.SearchPlayersParam) {
+    try {
+      const res = await this.runQuery<DB.SearchPlayersResponse>(
+        `/player/search`,
+        "post",
+        { query: params.query },
+      );
+      if (res.status === 404) {
+        return [];
+      }
+
+      return res.data;
+    } catch (e) {
+      throw new BackendError(
+        "Error when fetching player tournament matches",
+        "DB",
+        true,
+        e
+      );
+    }
+  }
+
+  async getMatchupPlacements(params: Params.GetMatchupParams) {
+    try {
+      const res = await this.runQuery<DB.MatchupPlacementsResponse>(
+        `/matchup/placement`,
+        "post",
+        { isOfficial: true, entrant1SmashIds: params.entrant1SmashIds,entrant2SmashIds: params.entrant2SmashIds, gameMode: params.gameMode },
+      );
+      if (res.status === 404) {
+        return [];
+      }
+
+      return res.data;
+    } catch (e) {
+      throw new BackendError(
+        "Error when fetching player tournament matches",
+        "DB",
+        true,
+        e
+      );
+    }
+  }
+  
+
+  async getMatchupMatches(params: Params.GetMatchupMatchesParam) {
+    try {
+      const res = await this.runQuery<DB.MatchupMatchesResponse>(
+        `/matchup/match`,
+        "post",
+        { eventSlug: params.eventSlug, entrant1SmashIds: params.entrant1SmashIds,entrant2SmashIds: params.entrant2SmashIds },
+      );
+      if (res.status === 404) {
+        return [];
+      }
+
+      return res.data;
+    } catch (e) {
+      throw new BackendError(
+        "Error when fetching player tournament matches",
+        "DB",
+        true,
+        e
+      );
+    }
+  }
+
+  async getEventsList(params: Params.ListEventsParams) {
+    try {
+      const res = await this.runQuery<DB.ListEventsResponse>(
+        `/event`,
+        "post",
+        { gameMode: params.gameMode },
+      );
+      if (res.status === 404) {
+        return [];
+      }
+
+      return res.data;
+    } catch (e) {
+      throw new BackendError(
+        "Error when fetching player tournament matches",
+        "DB",
+        true,
+        e
+      );
+    }
+  }
+
+  async getStat(params: Params.GetStatParams) {
+    try {
+      const res = await this.runQuery<DB.GetStatsResponse>(
+        `/stat`,
+        "post",
+        { gameMode: params.gameMode, statType: params.statType },
+      );
+      if (res.status === 404) {
+        return [];
+      }
+
+      return res.data;
+    } catch (e) {
+      throw new BackendError(
+        "Error when fetching player tournament matches",
+        "DB",
+        true,
+        e
+      );
+    }
+  }
+
+  async getPRList(params: Params.GetPRParams) {
+    try {
+      const res = await this.runQuery<DB.GetPRResponse>(
+        `/pr`,
+        "post",
+        { gameMode: params.gameMode, region: params.region },
+      );
+      if (res.status === 404) {
+        return [];
+      }
+
+      return res.data;
+    } catch (e) {
+      throw new BackendError(
+        "Error when fetching player tournament matches",
+        "DB",
+        true,
+        e
+      );
+    }
+  }
+
 }

@@ -1,3 +1,3 @@
-export { DBService } from './getmethods'
-export * from './types/db'
+export { DBService } from './apiMethods'
+export * from './types/responses'
 export * from './types/params'
