@@ -47,32 +47,88 @@ export class DBService {
     return doRequest();
   }
 
-  /**
-   * Fetch a player's most recent legend.
+      /**
+   * Fetch a player's info by smashId
+   * Returns - smashId, brawlhallaId, name
    */
-  async getPlayerLegend(params: Params.GetPlayerLegendParams): Promise<string> {
-    try {
-      const res = await this.runQuery<DB.PlayerLegendResponse>(
-        `/player/${params.playerId}/legend`,
-        "get",
-        {}
-      );
-      if (res.status === 404) {
-        return null;
+      async getPlayer(params: Params.GetPlayerParams) {
+        try {
+          const res = await this.runQuery<DB.GetPlayerResponse>(
+            `/player/${params.smashId}`,
+            "get",
+            {},
+          );
+    
+          if (res.status === 404) {
+            return null;
+          }
+    
+          return res.data.player;
+        } catch (e) {
+          throw new BackendError(
+            "Error when fetching player information.",
+            "DB",
+            true,
+            e
+          );
+        }
+      }
+    
+        /**
+       * Fetch a player's info by brawlhallaId.
+       * Returns - smashId, brawlhallaId, name
+       */
+      async getPlayerBrawlhallaId(params: Params.GetBrawlhallaPlayerParams) {
+        try {
+          const res = await this.runQuery<DB.GetPlayerResponse>(
+            `/player/bhId/${params.brawlhallaId}`,
+            "get",
+            {},
+          );
+    
+          if (res.status === 404) {
+            return null;
+          }
+    
+          return res.data.player;
+        } catch (e) {
+          throw new BackendError(
+            "Error when fetching player information.",
+            "DB",
+            true,
+            e
+          );
+        }
       }
 
-      return res.data?.legend?.name;
-    } catch (e) {
-      throw new BackendError(
-        "Error when fetchng player legend information.",
-        "DB",
-        true,
-        e
-      );
-    }
-  }
 
-  /**
+
+      /**
+   * Fetch a player's teammates. SmashId is required.
+   */
+      async getPlayerTeammates(params: Partial<Params.GetPlayerTeammatesParams>) {
+        try {
+          const res = await this.runQuery<DB.TeammateResponse>(
+            `/player/teammate`,
+            "post",
+            { smashId: params.smashId, isOfficial: params.isOfficial, maxResults: params.maxResults },
+          );
+          if (res.status === 404) {
+            return [];
+          }
+    
+          return res.data;
+        } catch (e) {
+          throw new BackendError(
+            "Error when fetching player tournament matches",
+            "DB",
+            true,
+            e
+          );
+        }
+      }
+
+        /**
    * Fetch a player's PR information.
    */
   async getPlayerPR(params: Params.GetPlayerPRParams): Promise<DB.PlayerPRResponse> {
@@ -82,7 +138,7 @@ export class DBService {
         "post",
         {
           entrantSmashIds: [params.entrantSmashId],
-          ganeMode: params.gameMode,
+          gameMode: params.gameMode,
         }
       );
       if (res.status === 404) {
@@ -96,99 +152,69 @@ export class DBService {
     }
   }
 
-    /**
-   * Fetch matchup between players.
-   */
-  async getMatchup(params: Params.GetMatchupParams): Promise<[number, number]> {
-    try {
-      const res = await this.runQuery<DB.MatchupResponse>(
-        `/matchup`,
-        "post",
-        { isOfficial: true, entrant1SmashIds: params.entrant1SmashIds,entrant2SmashIds: params.entrant2SmashIds, gameMode: params.gameMode },
-      );
-      if (res.status === 404) {
-        return [0, 0];
-      }
-      const matchup = res.data?.matchups?.[0];
-      return matchup?.matches;
-    } catch (e) {
-      if (e.response?.status === 400) {
-        return [0, 0];
-      }
-
-      throw new BackendError(
-        `Error fetching player matchup ${params.entrant1SmashIds
-          .concat(params.entrant2SmashIds)
-          .join(", ")}`,
-        "DB",
-        true,
-        e
-      );
-    }
-  }
 
     /**
-   * Fetch a player's info by smashId - smashId, brawlhallaId, name
+   * Fetch all players for given smashIds.
    */
-  async getPlayer(params: Params.GetPlayerParams) {
-    try {
-      const res = await this.runQuery<DB.GetPlayerResponse>(
-        `/player/${params.playerId}`,
-        "get",
-        {},
-      );
-
-      if (res.status === 404) {
-        return null;
+    async getSmashPlayerList(params: Params.GetPlayerListSmashIdParams) {
+      try {
+        const res = await this.runQuery<DB.PlayerListResponse>(
+          `/players`,
+          "post",
+          { smashIds: params.smashIds },
+        );
+        if (res.status === 404) {
+          return [];
+        }
+  
+        return res.data;
+      } catch (e) {
+        throw new BackendError(
+          "Error when fetching player tournament matches",
+          "DB",
+          true,
+          e
+        );
       }
-
-      return res.data.player;
-    } catch (e) {
-      throw new BackendError(
-        "Error when fetching player information.",
-        "DB",
-        true,
-        e
-      );
     }
-  }
-
-    /**
-   * Fetch a player's info by brawlhallaId.
-   * Returns - smashId, brawlhallaId, name
-   */
-  async getPlayerBrawlhallaId(params: Params.GetBrawlhallaPlayerParams) {
-    try {
-      const res = await this.runQuery<DB.GetPlayerResponse>(
-        `/player/bhId/${params.brawlhallaId}`,
-        "get",
-        {},
-      );
-
-      if (res.status === 404) {
-        return null;
+  
+        /**
+     * Fetch all players for given brawlhallaId.
+     */
+    async getBhPlayerList(params: Params.GetPlayerListBhIdParams) {
+      try {
+        const res = await this.runQuery<DB.PlayerListResponse>(
+          `/players`,
+          "post",
+          { bhIds: params.bhIds },
+        );
+        if (res.status === 404) {
+          return [];
+        }
+  
+        return res.data;
+      } catch (e) {
+        throw new BackendError(
+          "Error when fetching player tournament matches",
+          "DB",
+          true,
+          e
+        );
       }
-
-      return res.data.player;
-    } catch (e) {
-      throw new BackendError(
-        "Error when fetching player information.",
-        "DB",
-        true,
-        e
-      );
     }
-  }
+
+
+
 
       /**
-   * Fetch a player's placements in tournaments by game mode.
+   * Fetch a player's placements in tournaments by game mode. Entrant ids and game mode is required.
    */
-  async getPlayerEvents(params: Params.GetPlayerEventsParams) {
+  async getPlayerPlacements(params: Partial<Params.GetPlayerPlacementsParams>) {
     try {
       const res = await this.runQuery<DB.PlayerPlacementsResponse>(
         `/player/placement`,
         "post",
-        { entrantSmashIds: [params.entrantSmashId], isOfficial: true, year: params.year, gameMode: params.gameMode },
+        { entrantSmashIds: params.entrantSmashIds, isOfficial: params.isOfficial, gameMode: params.gameMode, nextToken: params.nextToken, maxResults: params.maxResults },
       );
       if (res.status === 404) {
         return [];
@@ -208,7 +234,7 @@ export class DBService {
       /**
    * Fetch a player's matches in the given event slug.
    */
-  async getPlayerEventMatches(params: Params.GetPlayerEventMatchesParams) {
+  async getPlayerEventMatches(params: Params.GetPlayerMatchesParams) {
     try {
       const res = await this.runQuery<DB.PlayerMatchesResponse>(
         `/player/match`,
@@ -230,92 +256,17 @@ export class DBService {
     }
   }
 
-      /**
-   * Fetch a player's teammates.
-   */
-  async getPlayerTeammates(params: Params.GetPlayerTeammatesParams) {
-    try {
-      const res = await this.runQuery<DB.TeammateResponse>(
-        `/player/teammate`,
-        "post",
-        { smashId: params.smashId, isOfficial: true },
-      );
-      if (res.status === 404) {
-        return [];
-      }
-
-      return res.data;
-    } catch (e) {
-      throw new BackendError(
-        "Error when fetching player tournament matches",
-        "DB",
-        true,
-        e
-      );
-    }
-  }
-
-
-    /**
-   * Fetch all players for given smashIds.
-   */
-  async getSmashPlayerList(params: Params.GetPlayerListSmashIdParams) {
-    try {
-      const res = await this.runQuery<DB.PlayerListResponse>(
-        `/players`,
-        "post",
-        { smashIds: params.smashIds },
-      );
-      if (res.status === 404) {
-        return [];
-      }
-
-      return res.data;
-    } catch (e) {
-      throw new BackendError(
-        "Error when fetching player tournament matches",
-        "DB",
-        true,
-        e
-      );
-    }
-  }
-
-      /**
-   * Fetch all players for given brawlhallaId.
-   */
-  async getBhPlayerList(params: Params.GetPlayerListBhIdParams) {
-    try {
-      const res = await this.runQuery<DB.PlayerListResponse>(
-        `/players`,
-        "post",
-        { smashIds: params.bhIds },
-      );
-      if (res.status === 404) {
-        return [];
-      }
-
-      return res.data;
-    } catch (e) {
-      throw new BackendError(
-        "Error when fetching player tournament matches",
-        "DB",
-        true,
-        e
-      );
-    }
-  }
 
 
       /**
-   * Fetch all of a player's legends in a given year.
+   * Fetch all of a player's legends in a given year. Smash id is required.
    */
-  async getPlayerLegends(params: Params.GetPlayerLegendsParams) {
+  async getPlayerLegends(params: Partial<Params.GetPlayerLegendsParams>) {
     try {
       const res = await this.runQuery<DB.PlayerLegendsResponse>(
         `/player/legend`,
         "post",
-        { entrantSmashIds: [params.entrantSmashId], isOfficial: true, year: params.year },
+        { entrantSmashIds: params.entrantSmashIds, isOfficial: params.isOfficial, year: params.year, maxResults: params.maxResults, nextToken: params.nextToken },
       );
       if (res.status === 404) {
         return [];
@@ -332,15 +283,41 @@ export class DBService {
     }
   }
 
-      /**
-   * Search for a player.
+    /**
+   * Fetch a player's most recent legend with smash Id.
    */
-  async searchPlayers(params: Params.SearchPlayersParam) {
+    async getRecentPlayerLegend(params: Params.GetRecentPlayerLegendParams): Promise<DB.RecentPlayerLegendResponse> {
+      try {
+        const res = await this.runQuery<DB.RecentPlayerLegendResponse>(
+          `/player/${params.playerId}/legend`,
+          "get",
+          {}
+        );
+        if (res.status === 404) {
+          return null;
+        }
+  
+        return res.data;
+      } catch (e) {
+        throw new BackendError(
+          "Error when fetchng player legend information.",
+          "DB",
+          true,
+          e
+        );
+      }
+    }
+  
+
+      /**
+   * Search for a player. Query is required.
+   */
+  async searchPlayers(params: Partial<Params.SearchPlayersParam>) {
     try {
       const res = await this.runQuery<DB.SearchPlayersResponse>(
         `/player/search`,
         "post",
-        { query: params.query },
+        { query: params.query, nextToken: params.nextToken, maxResults: params.maxResults },
       );
       if (res.status === 404) {
         return [];
@@ -356,16 +333,48 @@ export class DBService {
       );
     }
   }
+  
+      /**
+   * Fetch matchup between players. Entrant1SmashId and game mode are required.
+   */
+      async getMatchup(params: Partial<Params.GetMatchupParams>): Promise<[number, number]> {
+        try {
+          const res = await this.runQuery<DB.MatchupResponse>(
+            `/matchup`,
+            "post",
+            { isOfficial: params.isOfficial, entrant1SmashIds: params.entrant1SmashIds, entrant2SmashIds: params.entrant2SmashIds, gameMode: params.gameMode, nextToken: params.nextToken, maxResults: params.maxResults },
+          );
+          if (res.status === 404) {
+            return [0, 0];
+          }
+          const matchup = res.data?.matchups?.[0];
+          return matchup?.matches;
+        } catch (e) {
+          if (e.response?.status === 400) {
+            return [0, 0];
+          }
+    
+          throw new BackendError(
+            `Error fetching player matchup ${params.entrant1SmashIds
+              .concat(params.entrant2SmashIds)
+              .join(", ")}`,
+            "DB",
+            true,
+            e
+          );
+        }
+      }
+
 
       /**
-   * Fetch placement info for matchup between given players.
+   * Fetch placement info for matchup between given players. Both entrant smash Ids and game mode are required.
    */
-  async getMatchupPlacements(params: Params.GetMatchupParams) {
+  async getMatchupPlacements(params: Partial<Params.GetMatchupParams>) {
     try {
       const res = await this.runQuery<DB.MatchupPlacementsResponse>(
         `/matchup/placement`,
         "post",
-        { isOfficial: true, entrant1SmashIds: params.entrant1SmashIds,entrant2SmashIds: params.entrant2SmashIds, gameMode: params.gameMode },
+        { isOfficial: params.isOfficial, entrant1SmashIds: params.entrant1SmashIds,entrant2SmashIds: params.entrant2SmashIds, gameMode: params.gameMode },
       );
       if (res.status === 404) {
         return [];
@@ -383,14 +392,14 @@ export class DBService {
   }
   
     /**
-   * Fetch match info for matchup between given players.
+   * Fetch match info for matchup between given players. Entrant1SmashIds is required.
    */
   async getMatchupMatches(params: Params.GetMatchupMatchesParam) {
     try {
       const res = await this.runQuery<DB.MatchupMatchesResponse>(
         `/matchup/match`,
         "post",
-        { eventSlug: params.eventSlug, entrant1SmashIds: params.entrant1SmashIds,entrant2SmashIds: params.entrant2SmashIds },
+        { eventSlug: params.eventSlug, entrant1SmashIds: params.entrant1SmashIds, entrant2SmashIds: params.entrant2SmashIds },
       );
       if (res.status === 404) {
         return [];
@@ -408,14 +417,14 @@ export class DBService {
   }
 
       /**
-   * Fetch all events in a given game mode.
+   * Fetch all events in a given game mode. Game mode is required.
    */
-  async getEventsList(params: Params.ListEventsParams) {
+  async getEventsList(params: Partial<Params.ListEventsParams>) {
     try {
       const res = await this.runQuery<DB.ListEventsResponse>(
         `/event`,
         "post",
-        { gameMode: params.gameMode },
+        { gameMode: params.gameMode, year: params.year, nextToken: params.nextToken, maxResults: params.maxResults, isOfficial: params.isOfficial },
       );
       if (res.status === 404) {
         return [];
@@ -433,39 +442,14 @@ export class DBService {
   }
 
       /**
-   * Fetch a list of requested stat.
+   * Fetch all PRs for a given game mode and region, required.
    */
-  async getStat(params: Params.GetStatParams) {
-    try {
-      const res = await this.runQuery<DB.GetStatsResponse>(
-        `/stat`,
-        "post",
-        { gameMode: params.gameMode, statType: params.statType },
-      );
-      if (res.status === 404) {
-        return [];
-      }
-
-      return res.data;
-    } catch (e) {
-      throw new BackendError(
-        "Error when fetching player tournament matches",
-        "DB",
-        true,
-        e
-      );
-    }
-  }
-
-      /**
-   * Fetch all PRs for a given game mode and region.
-   */
-  async getPRList(params: Params.GetPRParams) {
+  async getPRList(params: Partial<Params.GetPRParams>) {
     try {
       const res = await this.runQuery<DB.GetPRResponse>(
         `/pr`,
         "post",
-        { gameMode: params.gameMode, region: params.region },
+        { gameMode: params.gameMode, region: params.region, page: params.page, maxResults: params.maxResults, table: params.table, orderBy: params.orderBy },
       );
       if (res.status === 404) {
         return [];

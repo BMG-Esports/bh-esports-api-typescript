@@ -1,11 +1,25 @@
+export type PlayerResponse = {
+  smashId: number;
+  brawlhallaId: number;
+  name: string;
+  twitch: string;
+  twitter: string;
+  pronoun: string;
+  country: string;
+}
+
 export type GetPlayerResponse = {
-    player: {
-      smashId: number;
-      brawlhallaId: number;
-      name: string;
-    };
+    player: PlayerResponse;
   };
   
+  export type TeammateResponse = {
+    playerTeammates: {
+      player: PlayerResponse;
+      games: number;
+      lastTeamedDate: number;
+    }[];
+    nextToken: string;
+  }
 
   export type PRInformationResponse = {
     top8: number;
@@ -21,73 +35,56 @@ export type GetPlayerResponse = {
     earnings: number;
     pr: PRInformationResponse;
   };
+
+  export type PlayerListResponse = {
+    players: PlayerResponse[];
+  }
   
-  export type PlayerLegendResponse = {
-    legend: {
-      name: string;
-      count: number;
-    };
-  };
-  
-  export type MatchupResponse = {
-    matchups: {
-      matches: [number, number];
-      games: [number, number];
-    }[];
-  };
+  export type TournamentResponse = {
+    slug: string;
+    tournamentName: string;
+    eventName: string;
+    year: number;
+    isOfficial: boolean;
+    isTwos: boolean;
+    startTime: number;
+}
   
   export type PlayerPlacementsResponse = {
     playerPlacements: {
       placement: number;
-      tournament: {
-        slug: string;
-      };
+      tournament: TournamentResponse
     }[];
+    nextToken: string;
   };
   
   export type PlayerMatchesResponse = {
     playerMatches: {
       matchId: number;
       scores: [number, number];
+      legends: string[][];
+      maps: string[];
+      opponent: PlayerResponse[];
     }[];
   };
 
-  export type TeammateResponse = {
-    playerTeammates: {
-      player: {
-        smashId: number;
-        brawlhallaId: number;
-        name: string;
-      };
-      games: number;
-      lastTeamedDate: number;
-    }[];
-  }
-
-  export type PlayerListResponse = {
-    players: {
-      smashId: number;
-      brawlhallaId: number;
-      name: string;
-    }[];
+  export type LegendResponse = {
+    name: string;
+    count: number;
   }
 
   export type PlayerLegendsResponse = {
-    legends: {
-      name: string;
-      count: number;
-    }[];
+    legends: LegendResponse[];
+    nextToken: string;
   }
+
+  export type RecentPlayerLegendResponse = {
+    legend: LegendResponse;
+  };
 
   export type SearchPlayersResponse = {
     searchPlayers: {
-        player: {
-          smashId: number;
-          brawlhallaId: number;
-          name: string;
-          twitch: string;
-          twitter: string;
-        }
+      player: PlayerResponse;
       pr1v1: number;
       pr2v2: number;
       region: string;
@@ -98,27 +95,25 @@ export type GetPlayerResponse = {
       bronze: number;
       earnings: number;
     }[];
+    nextToken: string;
   }
+
+  export type MatchupResponse = {
+    matchups: {
+      matches: [number, number];
+      games: [number, number];
+      opponent: PlayerResponse[];
+    }[];
+    nextToken: string;
+  };
+
 
   export type MatchupPlacementsResponse = {
     matchupPlacements: {
       placements: number[];
-      tournament: {
-        slug: string;
-        tournamentName: string;
-        eventName: string;
-        year: number;
-        isTwos: boolean;
-        startTime: number;
-      }
-        player: {
-          smashId: number;
-          brawlhallaId: number;
-          name: string;
-          twitch: string;
-          twitter: string;
-        }
+      tournament: TournamentResponse
     }[];
+    nextToken: string;
   }
 
   export type MatchupMatchesResponse = {
@@ -131,21 +126,14 @@ export type GetPlayerResponse = {
   }
 
   export type ListEventsResponse = {
-    tournaments: {
-      slug: string;
-      tournamentName: string;
-      eventName: string;
-      year: number;
-      isTwos: boolean;
-      startTime: number;
-    }[];
+    tournaments: TournamentResponse[];
+    nextToken: string;
   }
-
-
-  /* TODO: each type of stat returns different json
-  */ 
-  export type GetStatsResponse = {
-    stats: string[];
+  
+  export type DuplicateResponse = {
+    region: string;
+    gameMode: number;
+    placement: number;
   }
 
   export type GetPRResponse = {
@@ -162,5 +150,7 @@ export type GetPlayerResponse = {
       powerRanking: number;
       points: number;
       earnings: number;
+      duplicates: DuplicateResponse[];
     }[];
+    totalPages: number;
   }

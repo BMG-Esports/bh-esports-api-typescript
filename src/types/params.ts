@@ -1,39 +1,21 @@
-export type GetPlayerLegendParams = {
-    playerId: number;
-}
-
-export type GetPlayerPRParams = {
-    entrantSmashId: number;
-    gameMode: number;
-}
-
-export type GetMatchupParams = {
-    entrant1SmashIds: number[];
-    entrant2SmashIds: number[];
-    gameMode: number;
-}
-
 export type GetPlayerParams = {
-    playerId: number;
+    smashId: number;
 }
 
 export type GetBrawlhallaPlayerParams = {
     brawlhallaId: number;
 }
 
-export type GetPlayerEventMatchesParams = {
-    entrantSmashId: number;
-    slug: string;
-}
-
-export type GetPlayerEventsParams = {
-    entrantSmashId: number;
-    year: number;
-    gameMode: number;
-}
-
 export type GetPlayerTeammatesParams = {
     smashId: number;
+    isOfficial: boolean;
+    maxResults: number;
+}
+
+
+export type GetPlayerPRParams = {
+    entrantSmashId: number;
+    gameMode: number;
 }
 
 export type GetPlayerListSmashIdParams = {
@@ -44,14 +26,47 @@ export type GetPlayerListBhIdParams = {
     bhIds: number[];
 }
 
+
+export type GetPlayerPlacementsParams = {
+    gameMode: number;
+    isOfficial: boolean;
+    entrantSmashIds: number[];
+    nextToken: string;
+    maxResults: number;
+}
+
+export type GetMatchupParams = {
+    entrant1SmashIds: number[];
+    entrant2SmashIds: number[];
+    gameMode: number;
+    nextToken: string;
+    maxResults: number;
+    isOfficial: boolean;
+}
+
 export type GetPlayerLegendsParams = {
-    entrantSmashId: number;
+    entrantSmashIds: number[];
+    isOfficial: boolean;
     year: number;
+    nextToken: string;
+    maxResults: number;
+}
+
+export type GetRecentPlayerLegendParams = {
+    playerId: number;
 }
 
 export type SearchPlayersParam = {
     query: string;
+    nextToken: string;
+    maxResults: number;
 }
+
+export type GetPlayerMatchesParams = {
+    entrantSmashId: number;
+    slug: string;
+}
+
 
 export type GetMatchupMatchesParam = {
     eventSlug: string;
@@ -61,23 +76,19 @@ export type GetMatchupMatchesParam = {
 
 export type ListEventsParams = {
     gameMode: number;
+    nextToken: string;
+    maxResults: number;
+    isOfficial: boolean;
+    year: number;
 }
 
-export type GetStatParams = {
-    gameMode: number;
-    statType: StatType;
-}
-
-enum StatType {
-    MostUsed = "MOST_USED_SIG",
-	MostPlayedWeapon = "MOST_PLAYED_WEAPON",
-	AverageDamage = "AVERAGE_DAMAGE",
-	AverageJumps = "AVERAGE_JUMPS",
-	SetWinsPerYear = "SET_WINS_PER_YEAR"
-}
 
 export type GetPRParams = {
+    page: number;
+    maxResults: number;
     gameMode: number;
     region: string;
+    table: string;
+    orderBy: string;
 }
 
