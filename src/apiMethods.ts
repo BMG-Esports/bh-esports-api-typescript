@@ -65,9 +65,10 @@ export class DBService {
     
           return res.data.player;
         } catch (e) {
+          const errorMessage = e.response?.data?.message || "Error when fetching player information.";
           throw new BackendError(
-            "Error when fetching player information.",
-            "DB",
+            errorMessage,
+            "DBService",
             true,
             e
           );
@@ -78,7 +79,7 @@ export class DBService {
        * Fetch a player's info by brawlhallaId.
        * Returns - smashId, brawlhallaId, name
        */
-      async getPlayerBrawlhallaId(params: Params.GetBrawlhallaPlayerParams) {
+      async getPlayerByBrawlhallaId(params: Params.GetBrawlhallaPlayerParams) {
         try {
           const res = await this.runQuery<DB.GetPlayerResponse>(
             `/player/bhId/${params.brawlhallaId}`,
@@ -92,9 +93,10 @@ export class DBService {
     
           return res.data.player;
         } catch (e) {
+          const errorMessage = e.response?.data?.message || "Error when fetching player information";
           throw new BackendError(
-            "Error when fetching player information.",
-            "DB",
+            errorMessage,
+            "DBService",
             true,
             e
           );
@@ -106,12 +108,12 @@ export class DBService {
       /**
    * Fetch a player's teammates. SmashId is required.
    */
-      async getPlayerTeammates(params: Partial<Params.GetPlayerTeammatesParams>) {
+      async describePlayerTeammates(params: Params.DescribePlayerTeammatesParams) {
         try {
           const res = await this.runQuery<DB.TeammateResponse>(
             `/player/teammate`,
             "post",
-            { smashId: params.smashId, isOfficial: params.isOfficial, maxResults: params.maxResults },
+            { smashId: params.smashId, isOfficial: params.isOfficial, maxResults: params.maxResults, nextToken: params.nextToken},
           );
           if (res.status === 404) {
             return [];
@@ -119,9 +121,10 @@ export class DBService {
     
           return res.data;
         } catch (e) {
+          const errorMessage = e.response?.data?.message || "Error when fetching player teammates";
           throw new BackendError(
-            "Error when fetching player tournament matches",
-            "DB",
+            errorMessage,
+            "DBService",
             true,
             e
           );
@@ -131,7 +134,7 @@ export class DBService {
         /**
    * Fetch a player's PR information.
    */
-  async getPlayerPR(params: Params.GetPlayerPRParams): Promise<DB.PlayerPRResponse> {
+  async describePlayerPR(params: Params.DescribePlayerPRParams): Promise<DB.PlayerPRResponse> {
     try {
       const res = await this.runQuery<DB.PlayerPRResponse>(
         `/player/pr`,
@@ -148,7 +151,8 @@ export class DBService {
       // const key = gameMode === 1 ? "pr1v1" : "pr2v2";
       return res.data;
     } catch (e) {
-      throw new BackendError("Error when fetching player PR.", "DB", true, e);
+      const errorMessage = e.response?.data?.message || "Error when fetching player PR.";
+      throw new BackendError(errorMessage, "DBService", true, e);
     }
   }
 
@@ -156,7 +160,7 @@ export class DBService {
     /**
    * Fetch all players for given smashIds.
    */
-    async getSmashPlayerList(params: Params.GetPlayerListSmashIdParams) {
+    async listSmashPlayers(params: Params.ListSmashPlayersParams) {
       try {
         const res = await this.runQuery<DB.PlayerListResponse>(
           `/players`,
@@ -169,9 +173,10 @@ export class DBService {
   
         return res.data;
       } catch (e) {
+        const errorMessage = e.response?.data?.message || "Error when fetching player list";
         throw new BackendError(
-          "Error when fetching player tournament matches",
-          "DB",
+          errorMessage,
+          "DBService",
           true,
           e
         );
@@ -181,7 +186,7 @@ export class DBService {
         /**
      * Fetch all players for given brawlhallaId.
      */
-    async getBhPlayerList(params: Params.GetPlayerListBhIdParams) {
+    async listBrawlhallaPlayers(params: Params.ListBrawlhallaPlayersParams) {
       try {
         const res = await this.runQuery<DB.PlayerListResponse>(
           `/players`,
@@ -194,9 +199,10 @@ export class DBService {
   
         return res.data;
       } catch (e) {
+        const errorMessage = e.response?.data?.message || "Error when fetching player list";
         throw new BackendError(
-          "Error when fetching player tournament matches",
-          "DB",
+          errorMessage,
+          "DBService",
           true,
           e
         );
@@ -209,7 +215,7 @@ export class DBService {
       /**
    * Fetch a player's placements in tournaments by game mode. Entrant ids and game mode is required.
    */
-  async getPlayerPlacements(params: Partial<Params.GetPlayerPlacementsParams>) {
+  async describePlayerPlacements(params: Params.DescribePlayerPlacementsParams) {
     try {
       const res = await this.runQuery<DB.PlayerPlacementsResponse>(
         `/player/placement`,
@@ -222,9 +228,10 @@ export class DBService {
 
       return res.data.playerPlacements;
     } catch (e) {
+      const errorMessage = e.response?.data?.message || "Error when fetching player tournament history";
       throw new BackendError(
-        "Error when fetching player tournament history",
-        "DB",
+        errorMessage,
+        "DBService",
         true,
         e
       );
@@ -234,7 +241,7 @@ export class DBService {
       /**
    * Fetch a player's matches in the given event slug.
    */
-  async getPlayerEventMatches(params: Params.GetPlayerMatchesParams) {
+  async describePlayerMatches(params: Params.DescribePlayerMatchesParams) {
     try {
       const res = await this.runQuery<DB.PlayerMatchesResponse>(
         `/player/match`,
@@ -247,9 +254,10 @@ export class DBService {
 
       return res.data.playerMatches;
     } catch (e) {
+      const errorMessage = e.response?.data?.message || "Error when fetching player event matches.";
       throw new BackendError(
-        "Error when fetching player tournament matches",
-        "DB",
+        errorMessage,
+        "DBService",
         true,
         e
       );
@@ -261,7 +269,7 @@ export class DBService {
       /**
    * Fetch all of a player's legends in a given year. Smash id is required.
    */
-  async getPlayerLegends(params: Partial<Params.GetPlayerLegendsParams>) {
+  async describePlayerLegends(params: Params.DescribePlayerLegendsParams) {
     try {
       const res = await this.runQuery<DB.PlayerLegendsResponse>(
         `/player/legend`,
@@ -274,9 +282,10 @@ export class DBService {
 
       return res.data;
     } catch (e) {
+      const errorMessage = e.response?.data?.message || "Error when fetching player legends.";
       throw new BackendError(
-        "Error when fetching player tournament matches",
-        "DB",
+        errorMessage,
+        "DBService",
         true,
         e
       );
@@ -286,7 +295,7 @@ export class DBService {
     /**
    * Fetch a player's most recent legend with smash Id.
    */
-    async getRecentPlayerLegend(params: Params.GetRecentPlayerLegendParams): Promise<DB.RecentPlayerLegendResponse> {
+    async describePlayerRecentLegend(params: Params.DescribePlayerRecentLegendParams): Promise<DB.RecentPlayerLegendResponse> {
       try {
         const res = await this.runQuery<DB.RecentPlayerLegendResponse>(
           `/player/${params.playerId}/legend`,
@@ -299,9 +308,10 @@ export class DBService {
   
         return res.data;
       } catch (e) {
+        const errorMessage = e.response?.data?.message || "Error when fetchng player legend information.";
         throw new BackendError(
-          "Error when fetchng player legend information.",
-          "DB",
+          errorMessage,
+          "DBService",
           true,
           e
         );
@@ -312,7 +322,7 @@ export class DBService {
       /**
    * Search for a player. Query is required.
    */
-  async searchPlayers(params: Partial<Params.SearchPlayersParam>) {
+  async searchPlayers(params: Params.SearchPlayersParam) {
     try {
       const res = await this.runQuery<DB.SearchPlayersResponse>(
         `/player/search`,
@@ -325,9 +335,10 @@ export class DBService {
 
       return res.data;
     } catch (e) {
+      const errorMessage = e.response?.data?.message || "Error when searching for player.";
       throw new BackendError(
-        "Error when fetching player tournament matches",
-        "DB",
+        errorMessage,
+        "DBService",
         true,
         e
       );
@@ -337,7 +348,7 @@ export class DBService {
       /**
    * Fetch matchup between players. Entrant1SmashId and game mode are required.
    */
-      async getMatchup(params: Partial<Params.GetMatchupParams>): Promise<[number, number]> {
+      async describeMatchup(params: Params.DescribeMatchupParams): Promise<[number, number]> {
         try {
           const res = await this.runQuery<DB.MatchupResponse>(
             `/matchup`,
@@ -353,12 +364,12 @@ export class DBService {
           if (e.response?.status === 400) {
             return [0, 0];
           }
-    
+          const errorMessage = e.response?.data?.message ||  `Error fetching player matchup ${params.entrant1SmashIds
+            .concat(params.entrant2SmashIds)
+            .join(", ")}`;
           throw new BackendError(
-            `Error fetching player matchup ${params.entrant1SmashIds
-              .concat(params.entrant2SmashIds)
-              .join(", ")}`,
-            "DB",
+           errorMessage,
+            "DBService",
             true,
             e
           );
@@ -369,7 +380,7 @@ export class DBService {
       /**
    * Fetch placement info for matchup between given players. Both entrant smash Ids and game mode are required.
    */
-  async getMatchupPlacements(params: Partial<Params.GetMatchupParams>) {
+  async describeMatchupPlacements(params: Params.DescribeMatchupPlacementParams) {
     try {
       const res = await this.runQuery<DB.MatchupPlacementsResponse>(
         `/matchup/placement`,
@@ -382,9 +393,10 @@ export class DBService {
 
       return res.data;
     } catch (e) {
+      const errorMessage = e.response?.data?.message || "Error when fetching matchup placements.";
       throw new BackendError(
-        "Error when fetching player tournament matches",
-        "DB",
+        errorMessage,
+        "DBService",
         true,
         e
       );
@@ -394,7 +406,7 @@ export class DBService {
     /**
    * Fetch match info for matchup between given players. Entrant1SmashIds is required.
    */
-  async getMatchupMatches(params: Params.GetMatchupMatchesParam) {
+  async describeMatchupMatches(params: Params.DescribeMatchupMatchesParam) {
     try {
       const res = await this.runQuery<DB.MatchupMatchesResponse>(
         `/matchup/match`,
@@ -407,9 +419,10 @@ export class DBService {
 
       return res.data;
     } catch (e) {
+      const errorMessage = e.response?.data?.message || "Error when fetching matchup matches.";
       throw new BackendError(
-        "Error when fetching player tournament matches",
-        "DB",
+        errorMessage,
+        "DBService",
         true,
         e
       );
@@ -419,7 +432,7 @@ export class DBService {
       /**
    * Fetch all events in a given game mode. Game mode is required.
    */
-  async getEventsList(params: Partial<Params.ListEventsParams>) {
+  async listEvents(params: Params.ListEventsParams) {
     try {
       const res = await this.runQuery<DB.ListEventsResponse>(
         `/event`,
@@ -432,9 +445,10 @@ export class DBService {
 
       return res.data;
     } catch (e) {
+      const errorMessage = e.response?.data?.message || "Error when fetching events list";
       throw new BackendError(
-        "Error when fetching player tournament matches",
-        "DB",
+        errorMessage,
+        "DBService",
         true,
         e
       );
@@ -444,9 +458,9 @@ export class DBService {
       /**
    * Fetch all PRs for a given game mode and region, required.
    */
-  async getPRList(params: Partial<Params.GetPRParams>) {
+  async listPR(params: Params.ListPRParams) {
     try {
-      const res = await this.runQuery<DB.GetPRResponse>(
+      const res = await this.runQuery<DB.ListPRResponse>(
         `/pr`,
         "post",
         { gameMode: params.gameMode, region: params.region, page: params.page, maxResults: params.maxResults, table: params.table, orderBy: params.orderBy },
@@ -457,9 +471,10 @@ export class DBService {
 
       return res.data;
     } catch (e) {
+      const errorMessage = e.response?.data?.message || "Error when fetching PR list.";
       throw new BackendError(
-        "Error when fetching player tournament matches",
-        "DB",
+        errorMessage,
+        "DBService",
         true,
         e
       );
