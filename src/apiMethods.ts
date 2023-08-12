@@ -5,36 +5,27 @@ import { BackendError } from "./errors";
 
 type HTTPMethod = "get" | "post";
 
+var API_URL: string = "https://api.brawltools.com"
 
+export let overrideAPIURL = (url: string) => {
+  API_URL = url
+}
 
-export class DBService {
-  private readonly API_URL: string;
-  private readonly completionClosure?: () => void;
+let uri = (path: string): string => API_URL + path
 
-
-  constructor(apiURL: string = "https://api.brawltools.com", completion?: () => void){
-    this.API_URL = apiURL
-    this.completionClosure = completion
-  }
-
-  uri(path: string) {
-    return this.API_URL + path;
-  }
-
-  async runQuery<T = any>(
+let runQuery = async <T,>(
     endpoint: string,
     method: HTTPMethod = "get",
     body = {}
-  ): Promise<AxiosResponse<T>> {
+  ): Promise<AxiosResponse<T>> => {
     const doRequest = async () => {
       try {
         const res = await axios({
           method,
-          url: this.uri(endpoint),
+          url: uri(endpoint),
           data: body,
           timeout: 5000,
         });
-        this.completionClosure?.()
         return res;
       } catch (e) {
         // 404's don't count as normal failures.
@@ -51,9 +42,9 @@ export class DBService {
    * Fetch a player's info by smashId
    * Returns - smashId, brawlhallaId, name
    */
-      async getPlayer(params: Params.GetPlayerParams) {
+  export let getPlayer = async (params: Params.GetPlayerParams) => {
         try {
-          const res = await this.runQuery<DB.GetPlayerResponse>(
+          const res = await runQuery<DB.GetPlayerResponse>(
             `/player/${params.smashId}`,
             "get",
             {},
@@ -79,9 +70,9 @@ export class DBService {
        * Fetch a player's info by brawlhallaId.
        * Returns - smashId, brawlhallaId, name
        */
-      async getPlayerByBrawlhallaId(params: Params.GetBrawlhallaPlayerParams) {
+      export let getPlayerByBrawlhallaId = async (params: Params.GetBrawlhallaPlayerParams) => {
         try {
-          const res = await this.runQuery<DB.GetPlayerResponse>(
+          const res = await runQuery<DB.GetPlayerResponse>(
             `/player/bhId/${params.brawlhallaId}`,
             "get",
             {},
@@ -108,9 +99,9 @@ export class DBService {
       /**
    * Fetch a player's teammates. SmashId is required.
    */
-      async describePlayerTeammates(params: Params.DescribePlayerTeammatesParams) {
+     export let describePlayerTeammates = async (params: Params.DescribePlayerTeammatesParams) => {
         try {
-          const res = await this.runQuery<DB.TeammateResponse>(
+          const res = await runQuery<DB.TeammateResponse>(
             `/player/teammate`,
             "post",
             { smashId: params.smashId, isOfficial: params.isOfficial, maxResults: params.maxResults, nextToken: params.nextToken},
@@ -134,9 +125,9 @@ export class DBService {
         /**
    * Fetch a player's PR information.
    */
-  async describePlayerPR(params: Params.DescribePlayerPRParams): Promise<DB.PlayerPRResponse> {
+  export let describePlayerPR = async (params: Params.DescribePlayerPRParams): Promise<DB.PlayerPRResponse> => {
     try {
-      const res = await this.runQuery<DB.PlayerPRResponse>(
+      const res = await runQuery<DB.PlayerPRResponse>(
         `/player/pr`,
         "post",
         {
@@ -160,9 +151,9 @@ export class DBService {
     /**
    * Fetch all players for given smashIds.
    */
-    async listSmashPlayers(params: Params.ListSmashPlayersParams) {
+    export let listSmashPlayers = async (params: Params.ListSmashPlayersParams) => {
       try {
-        const res = await this.runQuery<DB.PlayerListResponse>(
+        const res = await runQuery<DB.PlayerListResponse>(
           `/players`,
           "post",
           { smashIds: params.smashIds },
@@ -186,9 +177,9 @@ export class DBService {
         /**
      * Fetch all players for given brawlhallaId.
      */
-    async listBrawlhallaPlayers(params: Params.ListBrawlhallaPlayersParams) {
+    export let listBrawlhallaPlayers = async (params: Params.ListBrawlhallaPlayersParams) => {
       try {
-        const res = await this.runQuery<DB.PlayerListResponse>(
+        const res = await runQuery<DB.PlayerListResponse>(
           `/players`,
           "post",
           { bhIds: params.bhIds },
@@ -215,9 +206,9 @@ export class DBService {
       /**
    * Fetch a player's placements in tournaments by game mode. Entrant ids and game mode is required.
    */
-  async describePlayerPlacements(params: Params.DescribePlayerPlacementsParams) {
+  export let describePlayerPlacements = async (params: Params.DescribePlayerPlacementsParams) => {
     try {
-      const res = await this.runQuery<DB.PlayerPlacementsResponse>(
+      const res = await runQuery<DB.PlayerPlacementsResponse>(
         `/player/placement`,
         "post",
         { entrantSmashIds: params.entrantSmashIds, isOfficial: params.isOfficial, gameMode: params.gameMode, nextToken: params.nextToken, maxResults: params.maxResults },
@@ -241,9 +232,9 @@ export class DBService {
       /**
    * Fetch a player's matches in the given event slug.
    */
-  async describePlayerMatches(params: Params.DescribePlayerMatchesParams) {
+  export let describePlayerMatches = async (params: Params.DescribePlayerMatchesParams) => {
     try {
-      const res = await this.runQuery<DB.PlayerMatchesResponse>(
+      const res = await runQuery<DB.PlayerMatchesResponse>(
         `/player/match`,
         "post",
         { eventSlug: params.slug, entrantSmashIds: [params.entrantSmashId] },
@@ -269,9 +260,9 @@ export class DBService {
       /**
    * Fetch all of a player's legends in a given year. Smash id is required.
    */
-  async describePlayerLegends(params: Params.DescribePlayerLegendsParams) {
+  export let describePlayerLegends = async (params: Params.DescribePlayerLegendsParams) => {
     try {
-      const res = await this.runQuery<DB.PlayerLegendsResponse>(
+      const res = await runQuery<DB.PlayerLegendsResponse>(
         `/player/legend`,
         "post",
         { entrantSmashIds: params.entrantSmashIds, isOfficial: params.isOfficial, year: params.year, maxResults: params.maxResults, nextToken: params.nextToken },
@@ -295,9 +286,9 @@ export class DBService {
     /**
    * Fetch a player's most recent legend with smash Id.
    */
-    async describePlayerRecentLegend(params: Params.DescribePlayerRecentLegendParams): Promise<DB.RecentPlayerLegendResponse> {
+    export let describePlayerRecentLegend = async (params: Params.DescribePlayerRecentLegendParams): Promise<DB.RecentPlayerLegendResponse> => {
       try {
-        const res = await this.runQuery<DB.RecentPlayerLegendResponse>(
+        const res = await runQuery<DB.RecentPlayerLegendResponse>(
           `/player/${params.playerId}/legend`,
           "get",
           {}
@@ -322,9 +313,9 @@ export class DBService {
       /**
    * Search for a player. Query is required.
    */
-  async searchPlayers(params: Params.SearchPlayersParam) {
+  export let searchPlayers = async (params: Params.SearchPlayersParam) => {
     try {
-      const res = await this.runQuery<DB.SearchPlayersResponse>(
+      const res = await runQuery<DB.SearchPlayersResponse>(
         `/player/search`,
         "post",
         { query: params.query, nextToken: params.nextToken, maxResults: params.maxResults },
@@ -348,9 +339,9 @@ export class DBService {
       /**
    * Fetch matchup between players. Entrant1SmashId and game mode are required.
    */
-      async describeMatchup(params: Params.DescribeMatchupParams): Promise<[number, number]> {
+     export let describeMatchup = async (params: Params.DescribeMatchupParams): Promise<[number, number]> => {
         try {
-          const res = await this.runQuery<DB.MatchupResponse>(
+          const res = await runQuery<DB.MatchupResponse>(
             `/matchup`,
             "post",
             { isOfficial: params.isOfficial, entrant1SmashIds: params.entrant1SmashIds, entrant2SmashIds: params.entrant2SmashIds, gameMode: params.gameMode, nextToken: params.nextToken, maxResults: params.maxResults },
@@ -380,9 +371,9 @@ export class DBService {
       /**
    * Fetch placement info for matchup between given players. Both entrant smash Ids and game mode are required.
    */
-  async describeMatchupPlacements(params: Params.DescribeMatchupPlacementParams) {
+  export let describeMatchupPlacements = async (params: Params.DescribeMatchupPlacementParams) => {
     try {
-      const res = await this.runQuery<DB.MatchupPlacementsResponse>(
+      const res = await runQuery<DB.MatchupPlacementsResponse>(
         `/matchup/placement`,
         "post",
         { isOfficial: params.isOfficial, entrant1SmashIds: params.entrant1SmashIds,entrant2SmashIds: params.entrant2SmashIds, gameMode: params.gameMode },
@@ -406,9 +397,9 @@ export class DBService {
     /**
    * Fetch match info for matchup between given players. Entrant1SmashIds is required.
    */
-  async describeMatchupMatches(params: Params.DescribeMatchupMatchesParam) {
+  export let describeMatchupMatches = async (params: Params.DescribeMatchupMatchesParam) => {
     try {
-      const res = await this.runQuery<DB.MatchupMatchesResponse>(
+      const res = await runQuery<DB.MatchupMatchesResponse>(
         `/matchup/match`,
         "post",
         { eventSlug: params.eventSlug, entrant1SmashIds: params.entrant1SmashIds, entrant2SmashIds: params.entrant2SmashIds },
@@ -432,9 +423,9 @@ export class DBService {
       /**
    * Fetch all events in a given game mode. Game mode is required.
    */
-  async listEvents(params: Params.ListEventsParams) {
+  export let listEvents = async (params: Params.ListEventsParams) => {
     try {
-      const res = await this.runQuery<DB.ListEventsResponse>(
+      const res = await runQuery<DB.ListEventsResponse>(
         `/event`,
         "post",
         { gameMode: params.gameMode, year: params.year, nextToken: params.nextToken, maxResults: params.maxResults, isOfficial: params.isOfficial },
@@ -458,9 +449,9 @@ export class DBService {
       /**
    * Fetch all PRs for a given game mode and region, required.
    */
-  async listPR(params: Params.ListPRParams) {
+  export let listPR = async (params: Params.ListPRParams) => {
     try {
-      const res = await this.runQuery<DB.ListPRResponse>(
+      const res = await runQuery<DB.ListPRResponse>(
         `/pr`,
         "post",
         { gameMode: params.gameMode, region: params.region, page: params.page, maxResults: params.maxResults, table: params.table, orderBy: params.orderBy },
@@ -480,5 +471,3 @@ export class DBService {
       );
     }
   }
-
-}
