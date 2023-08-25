@@ -1,6 +1,6 @@
 {
   "name": "bh-esports-api-typescript",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Typescript library DBService to access Brawlhalla's player and tournament statistics",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,5 +10,7 @@
   "dependencies": {
     "axios": "^1.4.0"
   },
-  "scripts": {"prepublish": "tsc"}
+  "scripts": {
+    "prepublish": "tsc"
+  }
 }
