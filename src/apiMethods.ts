@@ -1,7 +1,6 @@
 import * as DB from "./types/responses";
 import * as Params from "./types/params"
 import axios, { AxiosResponse } from "axios";
-import { BackendError } from "./errors";
 
 type HTTPMethod = "get" | "post";
 
@@ -57,12 +56,7 @@ const runQuery = async <T>(
           return res.data.player;
         } catch (e) {
           const errorMessage = e.response?.data?.message || "Error when fetching player information.";
-          throw new BackendError(
-            errorMessage,
-            "DBService",
-            true,
-            e
-          );
+          throw new Error(errorMessage);
         }
       }
     
@@ -85,12 +79,7 @@ const runQuery = async <T>(
           return res.data.player;
         } catch (e) {
           const errorMessage = e.response?.data?.message || "Error when fetching player information";
-          throw new BackendError(
-            errorMessage,
-            "DBService",
-            true,
-            e
-          );
+          throw new Error(errorMessage);
         }
       }
 
@@ -113,12 +102,7 @@ const runQuery = async <T>(
           return res.data;
         } catch (e) {
           const errorMessage = e.response?.data?.message || "Error when fetching player teammates";
-          throw new BackendError(
-            errorMessage,
-            "DBService",
-            true,
-            e
-          );
+          throw new Error(errorMessage);
         }
       }
 
@@ -143,7 +127,7 @@ const runQuery = async <T>(
       return res.data;
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching player PR.";
-      throw new BackendError(errorMessage, "DBService", true, e);
+      throw new Error(errorMessage);
     }
   }
 
@@ -165,12 +149,7 @@ const runQuery = async <T>(
         return res.data;
       } catch (e) {
         const errorMessage = e.response?.data?.message || "Error when fetching player list";
-        throw new BackendError(
-          errorMessage,
-          "DBService",
-          true,
-          e
-        );
+        throw new Error(errorMessage);
       }
     }
   
@@ -191,12 +170,7 @@ const runQuery = async <T>(
         return res.data;
       } catch (e) {
         const errorMessage = e.response?.data?.message || "Error when fetching player list";
-        throw new BackendError(
-          errorMessage,
-          "DBService",
-          true,
-          e
-        );
+        throw new Error(errorMessage);
       }
     }
 
@@ -220,12 +194,7 @@ const runQuery = async <T>(
       return res.data.playerPlacements;
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching player tournament history";
-      throw new BackendError(
-        errorMessage,
-        "DBService",
-        true,
-        e
-      );
+      throw new Error(errorMessage);
     }
   }
 
@@ -246,12 +215,7 @@ const runQuery = async <T>(
       return res.data.playerMatches;
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching player event matches.";
-      throw new BackendError(
-        errorMessage,
-        "DBService",
-        true,
-        e
-      );
+      throw new Error(errorMessage);
     }
   }
 
@@ -274,12 +238,7 @@ const runQuery = async <T>(
       return res.data;
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching player legends.";
-      throw new BackendError(
-        errorMessage,
-        "DBService",
-        true,
-        e
-      );
+      throw new Error(errorMessage);
     }
   }
 
@@ -300,12 +259,7 @@ const runQuery = async <T>(
         return res.data;
       } catch (e) {
         const errorMessage = e.response?.data?.message || "Error when fetchng player legend information.";
-        throw new BackendError(
-          errorMessage,
-          "DBService",
-          true,
-          e
-        );
+        throw new Error(errorMessage);
       }
     }
   
@@ -327,12 +281,7 @@ const runQuery = async <T>(
       return res.data;
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when searching for player.";
-      throw new BackendError(
-        errorMessage,
-        "DBService",
-        true,
-        e
-      );
+      throw new Error(errorMessage);
     }
   }
   
@@ -358,13 +307,8 @@ const runQuery = async <T>(
           const errorMessage = e.response?.data?.message ||  `Error fetching player matchup ${params.entrant1SmashIds
             .concat(params.entrant2SmashIds)
             .join(", ")}`;
-          throw new BackendError(
-           errorMessage,
-            "DBService",
-            true,
-            e
-          );
-        }
+            throw new Error(errorMessage);
+          }
       }
 
 
@@ -385,12 +329,7 @@ const runQuery = async <T>(
       return res.data;
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching matchup placements.";
-      throw new BackendError(
-        errorMessage,
-        "DBService",
-        true,
-        e
-      );
+      throw new Error(errorMessage);
     }
   }
   
@@ -411,12 +350,7 @@ const runQuery = async <T>(
       return res.data;
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching matchup matches.";
-      throw new BackendError(
-        errorMessage,
-        "DBService",
-        true,
-        e
-      );
+      throw new Error(errorMessage);
     }
   }
 
@@ -437,12 +371,7 @@ const runQuery = async <T>(
       return res.data;
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching events list";
-      throw new BackendError(
-        errorMessage,
-        "DBService",
-        true,
-        e
-      );
+      throw new Error(errorMessage);
     }
   }
 
@@ -463,11 +392,6 @@ const runQuery = async <T>(
       return res.data;
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching PR list.";
-      throw new BackendError(
-        errorMessage,
-        "DBService",
-        true,
-        e
-      );
+      throw new Error(errorMessage);
     }
   }
