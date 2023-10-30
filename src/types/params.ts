@@ -6,29 +6,19 @@ export type GetBrawlhallaPlayerParams = {
     brawlhallaId: number;
 }
 
-export type DescribePlayerTeammatesParams = {
+export type GetPlayerTeammatesParams = {
     smashId: number;
     nextToken?: string;
     isOfficial?: boolean;
     maxResults?: number;
 }
 
-
-export type DescribePlayerPRParams = {
+export type GetPlayerPRParams = {
     entrantSmashId: number;
     gameMode: number;
 }
 
-export type ListSmashPlayersParams = {
-    smashIds: number[];
-}
-
-export type ListBrawlhallaPlayersParams = {
-    bhIds: number[];
-}
-
-
-export type DescribePlayerPlacementsParams = {
+export type GetPlayerPlacementsParams = {
     gameMode: number;
     isOfficial?: boolean;
     entrantSmashIds: number[];
@@ -36,7 +26,7 @@ export type DescribePlayerPlacementsParams = {
     maxResults?: number;
 }
 
-export type DescribeMatchupParams = {
+export type GetMatchupParams = {
     entrant1SmashIds: number[];
     entrant2SmashIds?: number[];
     gameMode: number;
@@ -45,7 +35,7 @@ export type DescribeMatchupParams = {
     isOfficial?: boolean;
 }
 
-export type DescribeMatchupPlacementParams = {
+export type GetMatchupPlacementParams = {
     entrant1SmashIds: number[];
     entrant2SmashIds: number[];
     gameMode: number;
@@ -54,7 +44,7 @@ export type DescribeMatchupPlacementParams = {
     isOfficial?: boolean;
 }
 
-export type DescribePlayerLegendsParams = {
+export type GetPlayerLegendsParams = {
     entrantSmashIds: number[];
     isOfficial?: boolean;
     year?: number;
@@ -62,7 +52,7 @@ export type DescribePlayerLegendsParams = {
     maxResults?: number;
 }
 
-export type DescribePlayerRecentLegendParams = {
+export type GetPlayerRecentLegendParams = {
     playerId: number;
 }
 
@@ -72,13 +62,12 @@ export type SearchPlayersParam = {
     maxResults?: number;
 }
 
-export type DescribePlayerMatchesParams = {
-    entrantSmashId: number;
+export type GetPlayerMatchesParams = {
+    entrantSmashIds: number[];
     slug: string;
 }
 
-
-export type DescribeMatchupMatchesParam = {
+export type GetMatchupMatchesParam = {
     eventSlug?: string;
     entrant1SmashIds: number[];
     entrant2SmashIds?: number[];
@@ -98,7 +87,6 @@ export type ListPRParams = {
     maxResults?: number;
     gameMode: number;
     region: string;
-    table?: string;
     orderBy?: string;
 }
 

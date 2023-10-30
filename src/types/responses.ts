@@ -12,7 +12,7 @@ export type GetPlayerResponse = {
     player: PlayerResponse;
   };
   
-  export type TeammateResponse = {
+  export type GetPlayerTeammatesReponse = {
     playerTeammates: {
       player: PlayerResponse;
       games: number;
@@ -31,14 +31,10 @@ export type GetPlayerResponse = {
     region: string;
   };
   
-  export type PlayerPRResponse = {
+  export type GetPlayerPRResponse = {
     earnings: number;
     pr: PRInformationResponse;
   };
-
-  export type PlayerListResponse = {
-    players: PlayerResponse[];
-  }
   
   export type TournamentResponse = {
     slug: string;
@@ -50,7 +46,7 @@ export type GetPlayerResponse = {
     startTime: number;
 }
   
-  export type PlayerPlacementsResponse = {
+  export type GetPlayerPlacementsResponse = {
     playerPlacements: {
       placement: number;
       tournament: TournamentResponse
@@ -58,7 +54,7 @@ export type GetPlayerResponse = {
     nextToken?: string;
   };
   
-  export type PlayerMatchesResponse = {
+  export type GetPlayerMatchesResponse = {
     playerMatches: {
       matchId: number;
       scores: [number, number];
@@ -73,12 +69,12 @@ export type GetPlayerResponse = {
     count: number;
   }
 
-  export type PlayerLegendsResponse = {
+  export type GetPlayerLegendsResponse = {
     legends: LegendResponse[];
     nextToken?: string;
   }
 
-  export type RecentPlayerLegendResponse = {
+  export type GetRecentPlayerLegendResponse = {
     legend: LegendResponse;
   };
 
@@ -98,7 +94,7 @@ export type GetPlayerResponse = {
     nextToken?: string;
   }
 
-  export type MatchupResponse = {
+  export type GetMatchupResponse = {
     matchups: {
       matches: [number, number];
       games: [number, number];
@@ -108,7 +104,7 @@ export type GetPlayerResponse = {
   };
 
 
-  export type MatchupPlacementsResponse = {
+  export type GetMatchupPlacementsResponse = {
     matchupPlacements: {
       placements: number[];
       tournament: TournamentResponse
@@ -116,7 +112,7 @@ export type GetPlayerResponse = {
     nextToken?: string;
   }
 
-  export type MatchupMatchesResponse = {
+  export type GetMatchupMatchesResponse = {
     matchupMatches: {
       matchId: number;
       scores: number[];
@@ -128,12 +124,6 @@ export type GetPlayerResponse = {
   export type ListEventsResponse = {
     tournaments: TournamentResponse[];
     nextToken?: string;
-  }
-  
-  export type DuplicateResponse = {
-    region: string;
-    gameMode: number;
-    placement: number;
   }
 
   export type ListPRResponse = {
@@ -150,7 +140,6 @@ export type GetPlayerResponse = {
       powerRanking: number;
       points: number;
       earnings: number;
-      duplicates: DuplicateResponse[];
     }[];
     totalPages: number;
   }

@@ -1,10 +1,7 @@
 import * as DB from "./types/responses";
 import * as Params from "./types/params"
-import axios, { AxiosResponse } from "axios";
 
-type HTTPMethod = "get" | "post";
-
-var API_URL: string = "https://api.brawltools.com"
+var API_URL: string = "https://api.brawltools.com/v1"
 
 export let overrideAPIURL = (url: string) => {
   API_URL = url
@@ -13,47 +10,55 @@ export let overrideAPIURL = (url: string) => {
 let uri = (path: string): string => API_URL + path
 
 const runQuery = async <T>(
-    endpoint: string,
-    method: HTTPMethod = "get",
-    body = {}
-  ): Promise<AxiosResponse<T>> => {
-    const doRequest = async () => {
-      try {
-        const res = await axios({
-          method,
-          url: uri(endpoint),
-          data: body,
-          timeout: 5000,
-        });
-        return res;
-      } catch (e) {
-        // 404's don't count as normal failures.
-        if (e.response && e.response.status === 404) {
-          return e.response;
-        }
-        throw e;
-      }
-    };
-    return doRequest();
+  endpoint: string,
+  params: Record<string, any> = {}
+): Promise<Response> => {
+
+  const uriWithParams = new URL(uri(endpoint));
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value) {
+      uriWithParams.searchParams.append(key, value.toString());
+    }
   }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+  try {
+    const response = await fetch(uriWithParams.href, { signal: controller.signal });
+
+    if (!response.ok && response.status !== 404) {
+      throw new Error(`Fetch failed with status: ${response.status}`);
+    }
+
+    return response;
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw new Error('Request timed out after 5000ms');
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 
       /**
    * Fetch a player's info by smashId
    * Returns - smashId, brawlhallaId, name
    */
-  export const getPlayer = async (params: Params.GetPlayerParams) => {
+  export const getPlayer = async (params: Params.GetPlayerParams): Promise<DB.GetPlayerResponse> => {
         try {
           const res = await runQuery<DB.GetPlayerResponse>(
             `/player/${params.smashId}`,
-            "get",
-            {},
           );
     
           if (res.status === 404) {
             return null;
           }
     
-          return res.data.player;
+          return await res.json();
         } catch (e) {
           const errorMessage = e.response?.data?.message || "Error when fetching player information.";
           throw new Error(errorMessage);
@@ -64,19 +69,17 @@ const runQuery = async <T>(
        * Fetch a player's info by brawlhallaId.
        * Returns - smashId, brawlhallaId, name
        */
-      export const getPlayerByBrawlhallaId = async (params: Params.GetBrawlhallaPlayerParams) => {
+      export const getPlayerByBrawlhallaId = async (params: Params.GetBrawlhallaPlayerParams): Promise<DB.GetPlayerResponse> => {
         try {
           const res = await runQuery<DB.GetPlayerResponse>(
             `/player/bhId/${params.brawlhallaId}`,
-            "get",
-            {},
           );
     
           if (res.status === 404) {
             return null;
           }
     
-          return res.data.player;
+          return await res.json();
         } catch (e) {
           const errorMessage = e.response?.data?.message || "Error when fetching player information";
           throw new Error(errorMessage);
@@ -88,18 +91,17 @@ const runQuery = async <T>(
       /**
    * Fetch a player's teammates. SmashId is required.
    */
-     export const describePlayerTeammates = async (params: Params.DescribePlayerTeammatesParams) => {
+     export const getPlayerTeammates = async (params: Params.GetPlayerTeammatesParams): Promise<DB.GetPlayerTeammatesReponse> => {
         try {
-          const res = await runQuery<DB.TeammateResponse>(
+          const res = await runQuery<DB.GetPlayerTeammatesReponse>(
             `/player/teammate`,
-            "post",
             { smashId: params.smashId, isOfficial: params.isOfficial, maxResults: params.maxResults, nextToken: params.nextToken},
           );
           if (res.status === 404) {
-            return [];
+            return { playerTeammates: [] }
           }
     
-          return res.data;
+          return await res.json();
         } catch (e) {
           const errorMessage = e.response?.data?.message || "Error when fetching player teammates";
           throw new Error(errorMessage);
@@ -109,13 +111,12 @@ const runQuery = async <T>(
         /**
    * Fetch a player's PR information.
    */
-  export const describePlayerPR = async (params: Params.DescribePlayerPRParams): Promise<DB.PlayerPRResponse> => {
+  export const getPlayerPR = async (params: Params.GetPlayerPRParams): Promise<DB.GetPlayerPRResponse> => {
     try {
-      const res = await runQuery<DB.PlayerPRResponse>(
+      const res = await runQuery<DB.GetPlayerPRResponse>(
         `/player/pr`,
-        "post",
         {
-          entrantSmashIds: [params.entrantSmashId],
+          entrantSmashIds: params.entrantSmashId,
           gameMode: params.gameMode,
         }
       );
@@ -124,74 +125,33 @@ const runQuery = async <T>(
       }
 
       // const key = gameMode === 1 ? "pr1v1" : "pr2v2";
-      return res.data;
+      return await res.json();
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching player PR.";
       throw new Error(errorMessage);
     }
   }
 
-
-    /**
-   * Fetch all players for given smashIds.
-   */
-    export const listSmashPlayers = async (params: Params.ListSmashPlayersParams) => {
-      try {
-        const res = await runQuery<DB.PlayerListResponse>(
-          `/players`,
-          "post",
-          { smashIds: params.smashIds },
-        );
-        if (res.status === 404) {
-          return [];
-        }
-  
-        return res.data;
-      } catch (e) {
-        const errorMessage = e.response?.data?.message || "Error when fetching player list";
-        throw new Error(errorMessage);
-      }
-    }
-  
-        /**
-     * Fetch all players for given brawlhallaId.
-     */
-    export const listBrawlhallaPlayers = async (params: Params.ListBrawlhallaPlayersParams) => {
-      try {
-        const res = await runQuery<DB.PlayerListResponse>(
-          `/players`,
-          "post",
-          { bhIds: params.bhIds },
-        );
-        if (res.status === 404) {
-          return [];
-        }
-  
-        return res.data;
-      } catch (e) {
-        const errorMessage = e.response?.data?.message || "Error when fetching player list";
-        throw new Error(errorMessage);
-      }
-    }
-
-
-
-
       /**
    * Fetch a player's placements in tournaments by game mode. Entrant ids and game mode is required.
    */
-  export const describePlayerPlacements = async (params: Params.DescribePlayerPlacementsParams) => {
+  export const getPlayerPlacements = async (params: Params.GetPlayerPlacementsParams): Promise<DB.GetPlayerPlacementsResponse> => {
     try {
-      const res = await runQuery<DB.PlayerPlacementsResponse>(
+      const res = await runQuery<DB.GetPlayerPlacementsResponse>(
         `/player/placement`,
-        "post",
-        { entrantSmashIds: params.entrantSmashIds, isOfficial: params.isOfficial, gameMode: params.gameMode, nextToken: params.nextToken, maxResults: params.maxResults },
+        {
+          entrantSmashIds: params.entrantSmashIds.join(','),
+          isOfficial: params.isOfficial,
+          gameMode: params.gameMode,
+          nextToken: params.nextToken,
+          maxResults: params.maxResults,
+        },
       );
       if (res.status === 404) {
-        return [];
+        return { playerPlacements: [] }
       }
 
-      return res.data.playerPlacements;
+      return await res.json();
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching player tournament history";
       throw new Error(errorMessage);
@@ -201,18 +161,20 @@ const runQuery = async <T>(
       /**
    * Fetch a player's matches in the given event slug.
    */
-  export const describePlayerMatches = async (params: Params.DescribePlayerMatchesParams) => {
+  export const getPlayerMatches = async (params: Params.GetPlayerMatchesParams): Promise<DB.GetPlayerMatchesResponse> => {
     try {
-      const res = await runQuery<DB.PlayerMatchesResponse>(
+      const res = await runQuery<DB.GetPlayerMatchesResponse>(
         `/player/match`,
-        "post",
-        { eventSlug: params.slug, entrantSmashIds: [params.entrantSmashId] },
+        {
+          eventSlug: params.slug,
+          entrantSmashIds: params.entrantSmashIds.join(",")
+        },
       );
       if (res.status === 404) {
-        return [];
+        return { playerMatches: [] }
       }
 
-      return res.data.playerMatches;
+      return await res.json();
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching player event matches.";
       throw new Error(errorMessage);
@@ -224,19 +186,25 @@ const runQuery = async <T>(
       /**
    * Fetch all of a player's legends in a given year. Smash id is required.
    */
-  export const describePlayerLegends = async (params: Params.DescribePlayerLegendsParams) => {
+  export const getPlayerLegends = async (params: Params.GetPlayerLegendsParams): Promise<DB.GetPlayerLegendsResponse> => {
     try {
-      const res = await runQuery<DB.PlayerLegendsResponse>(
+      const res = await runQuery<DB.GetPlayerLegendsResponse>(
         `/player/legend`,
-        "post",
-        { entrantSmashIds: params.entrantSmashIds, isOfficial: params.isOfficial, year: params.year, maxResults: params.maxResults, nextToken: params.nextToken },
+        {
+          entrantSmashIds: params.entrantSmashIds.join(","),
+          isOfficial: params.isOfficial,
+          year: params.year,
+          maxResults: params.maxResults,
+          nextToken: params.nextToken,
+        },
       );
       if (res.status === 404) {
-        return [];
+        return { legends: [] }
       }
 
-      return res.data;
+      return await res.json();
     } catch (e) {
+      console.log(e)
       const errorMessage = e.response?.data?.message || "Error when fetching player legends.";
       throw new Error(errorMessage);
     }
@@ -245,18 +213,17 @@ const runQuery = async <T>(
     /**
    * Fetch a player's most recent legend with smash Id.
    */
-    export const describePlayerRecentLegend = async (params: Params.DescribePlayerRecentLegendParams): Promise<DB.RecentPlayerLegendResponse> => {
+    export const getPlayerRecentLegend = async (params: Params.GetPlayerRecentLegendParams): Promise<DB.GetRecentPlayerLegendResponse> => {
       try {
-        const res = await runQuery<DB.RecentPlayerLegendResponse>(
+        const res = await runQuery<DB.GetRecentPlayerLegendResponse>(
           `/player/${params.playerId}/legend`,
-          "get",
           {}
         );
         if (res.status === 404) {
           return null;
         }
   
-        return res.data;
+        return await res.json();
       } catch (e) {
         const errorMessage = e.response?.data?.message || "Error when fetchng player legend information.";
         throw new Error(errorMessage);
@@ -267,18 +234,21 @@ const runQuery = async <T>(
       /**
    * Search for a player. Query is required.
    */
-  export const searchPlayers = async (params: Params.SearchPlayersParam) => {
+  export const searchPlayers = async (params: Params.SearchPlayersParam): Promise<DB.SearchPlayersResponse> => {
     try {
       const res = await runQuery<DB.SearchPlayersResponse>(
         `/player/search`,
-        "post",
-        { query: params.query, nextToken: params.nextToken, maxResults: params.maxResults },
+        {
+          query: params.query,
+          nextToken: params.nextToken,
+          maxResults: params.maxResults,
+        },
       );
       if (res.status === 404) {
-        return [];
+        return { searchPlayers: [] }
       }
 
-      return res.data;
+      return await res.json();
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when searching for player.";
       throw new Error(errorMessage);
@@ -288,25 +258,30 @@ const runQuery = async <T>(
       /**
    * Fetch matchup between players. Entrant1SmashId and game mode are required.
    */
-     export const describeMatchup = async (params: Params.DescribeMatchupParams): Promise<[number, number]> => {
+     export const getMatchup = async (params: Params.GetMatchupParams): Promise<DB.GetMatchupResponse> => {
         try {
-          const res = await runQuery<DB.MatchupResponse>(
+          const res = await runQuery<DB.GetMatchupResponse>(
             `/matchup`,
-            "post",
-            { isOfficial: params.isOfficial, entrant1SmashIds: params.entrant1SmashIds, entrant2SmashIds: params.entrant2SmashIds, gameMode: params.gameMode, nextToken: params.nextToken, maxResults: params.maxResults },
+            {
+              isOfficial: params.isOfficial,
+              entrant1SmashIds: params.entrant1SmashIds.join(","),
+              entrant2SmashIds: params.entrant2SmashIds.join(","),
+              gameMode: params.gameMode,
+              nextToken: params.nextToken,
+              maxResults: params.maxResults,
+            },
           );
           if (res.status === 404) {
-            return [0, 0];
+            return { matchups: [] }
           }
-          const matchup = res.data?.matchups?.[0];
-          return matchup?.matches;
+          const matchup = await res.json();
+          return matchup;
         } catch (e) {
           if (e.response?.status === 400) {
-            return [0, 0];
+            return { matchups: [] }
           }
-          const errorMessage = e.response?.data?.message ||  `Error fetching player matchup ${params.entrant1SmashIds
-            .concat(params.entrant2SmashIds)
-            .join(", ")}`;
+          const errorMessage = e.response?.data?.message || 
+            `Error fetching player matchup ${params.entrant1SmashIds.concat(params.entrant2SmashIds).join(", ")}`;
             throw new Error(errorMessage);
           }
       }
@@ -315,18 +290,22 @@ const runQuery = async <T>(
       /**
    * Fetch placement info for matchup between given players. Both entrant smash Ids and game mode are required.
    */
-  export const describeMatchupPlacements = async (params: Params.DescribeMatchupPlacementParams) => {
+  export const getMatchupPlacements = async (params: Params.GetMatchupPlacementParams): Promise<DB.GetMatchupPlacementsResponse> => {
     try {
-      const res = await runQuery<DB.MatchupPlacementsResponse>(
+      const res = await runQuery<DB.GetMatchupPlacementsResponse>(
         `/matchup/placement`,
-        "post",
-        { isOfficial: params.isOfficial, entrant1SmashIds: params.entrant1SmashIds,entrant2SmashIds: params.entrant2SmashIds, gameMode: params.gameMode },
+        {
+          isOfficial: params.isOfficial,
+          entrant1SmashIds: params.entrant1SmashIds.join(","),
+          entrant2SmashIds: params.entrant2SmashIds.join(","),
+          gameMode: params.gameMode,
+        },
       );
       if (res.status === 404) {
-        return [];
+        return { matchupPlacements: [] }
       }
 
-      return res.data;
+      return await res.json();
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching matchup placements.";
       throw new Error(errorMessage);
@@ -336,18 +315,21 @@ const runQuery = async <T>(
     /**
    * Fetch match info for matchup between given players. Entrant1SmashIds is required.
    */
-  export const describeMatchupMatches = async (params: Params.DescribeMatchupMatchesParam) => {
+  export const getMatchupMatches = async (params: Params.GetMatchupMatchesParam): Promise<DB.GetMatchupMatchesResponse> => {
     try {
-      const res = await runQuery<DB.MatchupMatchesResponse>(
+      const res = await runQuery<DB.GetMatchupMatchesResponse>(
         `/matchup/match`,
-        "post",
-        { eventSlug: params.eventSlug, entrant1SmashIds: params.entrant1SmashIds, entrant2SmashIds: params.entrant2SmashIds },
+        {
+          eventSlug: params.eventSlug,
+          entrant1SmashIds: params.entrant1SmashIds.join(","),
+          entrant2SmashIds: params.entrant2SmashIds.join(","),
+        },
       );
       if (res.status === 404) {
-        return [];
+        return { matchupMatches: [] }
       }
 
-      return res.data;
+      return await res.json();
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching matchup matches.";
       throw new Error(errorMessage);
@@ -357,18 +339,23 @@ const runQuery = async <T>(
       /**
    * Fetch all events in a given game mode. Game mode is required.
    */
-  export const listEvents = async (params: Params.ListEventsParams) => {
+  export const listEvents = async (params: Params.ListEventsParams): Promise<DB.ListEventsResponse> => {
     try {
       const res = await runQuery<DB.ListEventsResponse>(
         `/event`,
-        "post",
-        { gameMode: params.gameMode, year: params.year, nextToken: params.nextToken, maxResults: params.maxResults, isOfficial: params.isOfficial },
+        {
+          gameMode: params.gameMode,
+          year: params.year,
+          nextToken: params.nextToken,
+          maxResults: params.maxResults,
+          isOfficial: params.isOfficial,
+        },
       );
       if (res.status === 404) {
-        return [];
+        return { tournaments: [] }
       }
 
-      return res.data;
+      return await res.json();
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching events list";
       throw new Error(errorMessage);
@@ -378,18 +365,23 @@ const runQuery = async <T>(
       /**
    * Fetch all PRs for a given game mode and region, required.
    */
-  export const listPR = async (params: Params.ListPRParams) => {
+  export const listPR = async (params: Params.ListPRParams): Promise<DB.ListPRResponse> => {
     try {
       const res = await runQuery<DB.ListPRResponse>(
         `/pr`,
-        "post",
-        { gameMode: params.gameMode, region: params.region, page: params.page, maxResults: params.maxResults, table: params.table, orderBy: params.orderBy },
+        {
+          gameMode: params.gameMode,
+          region: params.region,
+          page: params.page,
+          maxResults: params.maxResults,
+          orderBy: params.orderBy,
+        },
       );
       if (res.status === 404) {
-        return [];
+        return { prPlayers: [], totalPages: 1 }
       }
 
-      return res.data;
+      return await res.json();
     } catch (e) {
       const errorMessage = e.response?.data?.message || "Error when fetching PR list.";
       throw new Error(errorMessage);

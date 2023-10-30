@@ -2,7 +2,7 @@
 Typescript library for bh-stats-api 
 
 # Installing
-Please run `npm install bh-esports-api-typescript` to install.
+Please run `npm install @brawlhalla/esports-sdk` to install.
 
 # To use
-`import * from "bh-esports-api-typescript";`
+`import * from "@brawlhalla/esports-sdk";`
