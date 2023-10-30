@@ -3,7 +3,8 @@
       "module": "commonjs",
       "target": "ES2017",
       "declaration": true,
-      "outDir": "./dist"
+      "outDir": "./dist",
+      "strictNullChecks": true
     },
     "include": [
       "src/**/*.ts"

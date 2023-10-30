@@ -1,92 +1,90 @@
-export type GetPlayerParams = {
-    smashId: number;
+export interface GetPlayerParams {
+  smashId: number
 }
 
-export type GetBrawlhallaPlayerParams = {
-    brawlhallaId: number;
+export interface GetBrawlhallaPlayerParams {
+  brawlhallaId: number
 }
 
-export type GetPlayerTeammatesParams = {
-    smashId: number;
-    nextToken?: string;
-    isOfficial?: boolean;
-    maxResults?: number;
+export interface GetPlayerTeammatesParams {
+  smashId: number
+  nextToken?: string
+  isOfficial?: boolean
+  maxResults?: number
 }
 
-export type GetPlayerPRParams = {
-    entrantSmashId: number;
-    gameMode: number;
+export interface GetPlayerPRParams {
+  entrantSmashId: number
+  gameMode: number
 }
 
-export type GetPlayerPlacementsParams = {
-    gameMode: number;
-    isOfficial?: boolean;
-    entrantSmashIds: number[];
-    nextToken?: string;
-    maxResults?: number;
+export interface GetPlayerPlacementsParams {
+  gameMode: number
+  isOfficial?: boolean
+  entrantSmashIds: number[]
+  nextToken?: string
+  maxResults?: number
 }
 
-export type GetMatchupParams = {
-    entrant1SmashIds: number[];
-    entrant2SmashIds?: number[];
-    gameMode: number;
-    nextToken?: string;
-    maxResults?: number;
-    isOfficial?: boolean;
+export interface GetMatchupParams {
+  entrant1SmashIds: number[]
+  entrant2SmashIds?: number[]
+  gameMode: number
+  nextToken?: string
+  maxResults?: number
+  isOfficial?: boolean
 }
 
-export type GetMatchupPlacementParams = {
-    entrant1SmashIds: number[];
-    entrant2SmashIds: number[];
-    gameMode: number;
-    nextToken?: string;
-    maxResults?: number;
-    isOfficial?: boolean;
+export interface GetMatchupPlacementParams {
+  entrant1SmashIds: number[]
+  entrant2SmashIds: number[]
+  gameMode: number
+  nextToken?: string
+  maxResults?: number
+  isOfficial?: boolean
 }
 
-export type GetPlayerLegendsParams = {
-    entrantSmashIds: number[];
-    isOfficial?: boolean;
-    year?: number;
-    nextToken?: string;
-    maxResults?: number;
+export interface GetPlayerLegendsParams {
+  entrantSmashIds: number[]
+  isOfficial?: boolean
+  year?: number
+  nextToken?: string
+  maxResults?: number
 }
 
-export type GetPlayerRecentLegendParams = {
-    playerId: number;
+export interface GetPlayerRecentLegendParams {
+  playerId: number
 }
 
-export type SearchPlayersParam = {
-    query: string;
-    nextToken?: string;
-    maxResults?: number;
+export interface SearchPlayersParam {
+  query: string
+  nextToken?: string
+  maxResults?: number
 }
 
-export type GetPlayerMatchesParams = {
-    entrantSmashIds: number[];
-    slug: string;
+export interface GetPlayerMatchesParams {
+  entrantSmashIds: number[]
+  slug: string
 }
 
-export type GetMatchupMatchesParam = {
-    eventSlug?: string;
-    entrant1SmashIds: number[];
-    entrant2SmashIds?: number[];
+export interface GetMatchupMatchesParam {
+  eventSlug?: string
+  entrant1SmashIds: number[]
+  entrant2SmashIds?: number[]
 }
 
-export type ListEventsParams = {
-    gameMode: number;
-    nextToken?: string;
-    maxResults?: number;
-    isOfficial?: boolean;
-    year?: number;
+export interface ListEventsParams {
+  gameMode: number
+  nextToken?: string
+  maxResults?: number
+  isOfficial?: boolean
+  year?: number
 }
 
-
-export type ListPRParams = {
-    page?: number;
-    maxResults?: number;
-    gameMode: number;
-    region: string;
-    orderBy?: string;
+export interface ListPRParams {
+  page?: number
+  maxResults?: number
+  gameMode: number
+  region: string
+  orderBy?: string
 }
-
