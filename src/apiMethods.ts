@@ -1,5 +1,6 @@
 import type * as DB from './types/responses'
 import type * as Params from './types/params'
+import 'isomorphic-fetch'
 
 let API_URL: string = 'https://api.brawltools.com/v1'
 
@@ -28,7 +29,18 @@ const runQuery = async (
     const response = await fetch(uriWithParams.href, { signal: controller.signal })
 
     if (!response.ok && response.status !== 404) {
-      throw new Error(`Fetch failed with status: ${response.status}`)
+      let errorMessage = `Fetch failed with status: ${response.status}`
+
+      // Try to extract a more specific error message from the API response, if available.
+      try {
+        const errorData = await response.json()
+        errorMessage = errorData.message ?? errorMessage
+      } catch (err) {
+        // The response is not a valid JSON or doesn't have a message property.
+        // Use the default error message.
+      }
+
+      throw new Error(errorMessage)
     }
 
     return response
@@ -56,7 +68,7 @@ export const getPlayer = async (params: Params.GetPlayerParams): Promise<DB.GetP
 
     return await res.json()
   } catch (e) {
-    const errorMessage = e.response?.data?.message ?? 'Error when fetching player information.'
+    const errorMessage = e.message ?? 'Error when fetching player information.'
     throw new Error(errorMessage)
   }
 }
@@ -75,7 +87,7 @@ export const getPlayerByBrawlhallaId = async (params: Params.GetBrawlhallaPlayer
 
     return await res.json()
   } catch (e) {
-    const errorMessage = e.response?.data?.message ?? 'Error when fetching player information'
+    const errorMessage = e.message ?? 'Error when fetching player information'
     throw new Error(errorMessage)
   }
 }
@@ -95,7 +107,7 @@ export const getPlayerTeammates = async (params: Params.GetPlayerTeammatesParams
 
     return await res.json()
   } catch (e) {
-    const errorMessage = e.response?.data?.message ?? 'Error when fetching player teammates'
+    const errorMessage = e.message ?? 'Error when fetching player teammates'
     throw new Error(errorMessage)
   }
 }
@@ -119,7 +131,7 @@ export const getPlayerPR = async (params: Params.GetPlayerPRParams): Promise<DB.
     // const key = gameMode === 1 ? "pr1v1" : "pr2v2";
     return await res.json()
   } catch (e) {
-    const errorMessage = e.response?.data?.message ?? 'Error when fetching player PR.'
+    const errorMessage = e.message ?? 'Error when fetching player PR.'
     throw new Error(errorMessage)
   }
 }
@@ -145,7 +157,7 @@ export const getPlayerPlacements = async (params: Params.GetPlayerPlacementsPara
 
     return await res.json()
   } catch (e) {
-    const errorMessage = e.response?.data?.message ?? 'Error when fetching player tournament history'
+    const errorMessage = e.message ?? 'Error when fetching player tournament history'
     throw new Error(errorMessage)
   }
 }
@@ -168,7 +180,7 @@ export const getPlayerMatches = async (params: Params.GetPlayerMatchesParams): P
 
     return await res.json()
   } catch (e) {
-    const errorMessage = e.response?.data?.message ?? 'Error when fetching player event matches.'
+    const errorMessage = e.message ?? 'Error when fetching player event matches.'
     throw new Error(errorMessage)
   }
 }
@@ -195,7 +207,7 @@ export const getPlayerLegends = async (params: Params.GetPlayerLegendsParams): P
     return await res.json()
   } catch (e) {
     console.log(e)
-    const errorMessage = e.response?.data?.message ?? 'Error when fetching player legends.'
+    const errorMessage = e.message ?? 'Error when fetching player legends.'
     throw new Error(errorMessage)
   }
 }
@@ -212,7 +224,7 @@ export const getPlayerRecentLegend = async (params: Params.GetPlayerRecentLegend
 
     return await res.json()
   } catch (e) {
-    const errorMessage = e.response?.data?.message ?? 'Error when fetchng player legend information.'
+    const errorMessage = e.message ?? 'Error when fetchng player legend information.'
     throw new Error(errorMessage)
   }
 }
@@ -236,7 +248,7 @@ export const searchPlayers = async (params: Params.SearchPlayersParam): Promise<
 
     return await res.json()
   } catch (e) {
-    const errorMessage = e.response?.data?.message ?? 'Error when searching for player.'
+    const errorMessage = e.message ?? 'Error when searching for player.'
     throw new Error(errorMessage)
   }
 }
@@ -266,7 +278,7 @@ export const getMatchup = async (params: Params.GetMatchupParams): Promise<DB.Ge
     if (e.response?.status === 400) {
       return { matchups: [] }
     }
-    const errorMessage = e.response?.data?.message ??
+    const errorMessage = e.message ??
             `Error fetching player matchup ${params.entrant1SmashIds.concat(params.entrant2SmashIds ?? []).join(', ')}`
     throw new Error(errorMessage)
   }
@@ -292,7 +304,7 @@ export const getMatchupPlacements = async (params: Params.GetMatchupPlacementPar
 
     return await res.json()
   } catch (e) {
-    const errorMessage = e.response?.data?.message ?? 'Error when fetching matchup placements.'
+    const errorMessage = e.message ?? 'Error when fetching matchup placements.'
     throw new Error(errorMessage)
   }
 }
@@ -316,7 +328,7 @@ export const getMatchupMatches = async (params: Params.GetMatchupMatchesParam): 
 
     return await res.json()
   } catch (e) {
-    const errorMessage = e.response?.data?.message ?? 'Error when fetching matchup matches.'
+    const errorMessage = e.message ?? 'Error when fetching matchup matches.'
     throw new Error(errorMessage)
   }
 }
@@ -342,7 +354,7 @@ export const listEvents = async (params: Params.ListEventsParams): Promise<DB.Li
 
     return await res.json()
   } catch (e) {
-    const errorMessage = e.response?.data?.message ?? 'Error when fetching events list'
+    const errorMessage = e.message ?? 'Error when fetching events list'
     throw new Error(errorMessage)
   }
 }
@@ -368,7 +380,7 @@ export const listPR = async (params: Params.ListPRParams): Promise<DB.ListPRResp
 
     return await res.json()
   } catch (e) {
-    const errorMessage = e.response?.data?.message ?? 'Error when fetching PR list.'
+    const errorMessage = e.message ?? 'Error when fetching PR list.'
     throw new Error(errorMessage)
   }
 }
