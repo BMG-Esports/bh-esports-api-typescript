@@ -295,7 +295,8 @@ export const getMatchupPlacements = async (params: Params.GetMatchupPlacementPar
         isOfficial: params.isOfficial,
         entrant1SmashIds: params.entrant1SmashIds.join(','),
         entrant2SmashIds: params.entrant2SmashIds.join(','),
-        gameMode: params.gameMode
+        gameMode: params.gameMode,
+        nextToken: params.nextToken
       }
     )
     if (res.status === 404) {
