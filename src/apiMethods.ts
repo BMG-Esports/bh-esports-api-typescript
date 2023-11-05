@@ -17,7 +17,7 @@ const runQuery = async (
   const uriWithParams = new URL(uri(endpoint))
 
   for (const [key, value] of Object.entries(params)) {
-    if (value !== null && value !== undefined) {
+    if (value !== null && value !== undefined && value !== '') {
       uriWithParams.searchParams.append(key, value.toString())
     }
   }
