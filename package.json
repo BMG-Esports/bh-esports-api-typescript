@@ -1,6 +1,6 @@
 {
   "name": "@bmg-esports/sdk",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Typescript library DBService to access Brawlhalla's player and tournament statistics",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
