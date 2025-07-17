@@ -109,4 +109,5 @@ export interface ListPrPlayersParams {
   bhIds: number[];
   sggIds: number[];
   cmIds: string[];
+  gameMode: number;
 }
