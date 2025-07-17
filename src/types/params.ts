@@ -98,16 +98,16 @@ export interface ListPRParams {
 }
 
 export interface ListPlayersParams {
-  playerIds: number[];
-  bhIds: number[];
-  sggIds: number[];
-  cmIds: string[];
+  playerIds?: number[];
+  bhIds?: number[];
+  sggIds?: number[];
+  cmIds?: string[];
 }
 
 export interface ListPrPlayersParams {
-  playerIds: number[];
-  bhIds: number[];
-  sggIds: number[];
-  cmIds: string[];
+  playerIds?: number[];
+  bhIds?: number[];
+  sggIds?: number[];
+  cmIds?: string[];
   gameMode: number;
 }
