@@ -1,7 +1,7 @@
 export interface PlayerResponse {
   playerId: number;
   sggPlayerId: number;
-  cmPlayerId: number;
+  cmPlayerId: string;
   brawlhallaId: number;
   name: string;
   twitch?: string;
