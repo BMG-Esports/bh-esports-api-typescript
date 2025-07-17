@@ -4,10 +4,10 @@ export interface PlayerResponse {
   cmPlayerId: number;
   brawlhallaId: number;
   name: string;
-  twitch: string;
-  twitter: string;
-  pronoun: string;
-  country: string;
+  twitch?: string;
+  twitter?: string;
+  pronoun?: string;
+  country?: string;
 }
 
 export interface GetPlayerResponse {
@@ -23,7 +23,7 @@ export interface GetPlayerTeammatesReponse {
   nextToken?: string;
 }
 
-export interface PRInformationResponse {
+export interface PlayerPrResponse {
   top8: number;
   top32: number;
   gold: number;
@@ -35,7 +35,7 @@ export interface PRInformationResponse {
 
 export interface GetPlayerPRResponse {
   earnings: number;
-  pr: PRInformationResponse;
+  pr: PlayerPrResponse;
 }
 
 export interface TournamentResponse {
@@ -144,4 +144,15 @@ export interface ListPRResponse {
     earnings: number;
   }>;
   totalPages: number;
+}
+
+export interface ListPlayersResponse {
+  players: Array<PlayerResponse>;
+}
+
+export interface ListPrPlayersResponse {
+  players: Array<{
+    player: PlayerResponse;
+    pr: PlayerPrResponse;
+  }>;
 }

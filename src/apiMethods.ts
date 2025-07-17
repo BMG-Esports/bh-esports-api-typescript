@@ -436,3 +436,35 @@ export const listPR = async (
     throw new Error(errorMessage);
   }
 };
+
+export const listPrPlayers = async (
+  params: Params.ListPrPlayersParams,
+): Promise<DB.ListPrPlayersResponse> => {
+  try {
+    const rest = await runQuery("/players/pr", params);
+    if (rest.status === 404) {
+      return { players: [] };
+    }
+
+    return await rest.json();
+  } catch (e) {
+    const errorMessage = e.message ?? "Error when fetching PR players list.";
+    throw new Error(errorMessage);
+  }
+};
+
+export const listPlayers = async (
+  params: Params.ListPlayersParams,
+): Promise<DB.ListPlayersResponse> => {
+  try {
+    const rest = await runQuery("/players", params);
+    if (rest.status === 404) {
+      return { players: [] };
+    }
+
+    return await rest.json();
+  } catch (e) {
+    const errorMessage = e.message ?? "Error when fetching PR players list.";
+    throw new Error(errorMessage);
+  }
+};

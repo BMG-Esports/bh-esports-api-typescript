@@ -96,3 +96,17 @@ export interface ListPRParams {
   region: string;
   orderBy?: string;
 }
+
+export interface ListPlayersParams {
+  playerIds: number[];
+  bhIds: number[];
+  sggIds: number[];
+  cmIds: string[];
+}
+
+export interface ListPrPlayersParams {
+  playerIds: number[];
+  bhIds: number[];
+  sggIds: number[];
+  cmIds: string[];
+}
