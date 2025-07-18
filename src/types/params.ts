@@ -22,7 +22,7 @@ export interface GetPlayerTeammatesParams {
 }
 
 export interface GetPlayerPRParams {
-  playerId: number;
+  playerIds: number[];
   gameMode: number;
 }
 

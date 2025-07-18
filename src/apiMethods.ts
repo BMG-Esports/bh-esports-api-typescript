@@ -173,7 +173,10 @@ export const getPlayerPR = async (
   try {
     const res = await runQuery(
       "/player/pr",
-      params,
+      {
+        ...params,
+        playerIds: params.playerIds.join(","),
+      },
     );
     if (res.status === 404) {
       return null;
