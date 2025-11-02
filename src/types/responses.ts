@@ -84,14 +84,8 @@ export interface GetRecentPlayerLegendResponse {
 export interface SearchPlayersResponse {
   searchPlayers: Array<{
     player: PlayerResponse;
-    pr1v1: number;
-    pr2v2: number;
-    region: string;
-    top32: number;
-    top8: number;
-    gold: number;
-    silver: number;
-    bronze: number;
+    pr1v1: PlayerPrResponse;
+    pr2v2: PlayerPrResponse;
     earnings: number;
   }>;
   nextToken?: string;
