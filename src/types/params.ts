@@ -86,6 +86,7 @@ export interface ListEventsParams {
   nextToken?: string;
   maxResults?: number;
   isOfficial?: boolean;
+  host?: "SGG" | "CM";
   year?: number;
 }
 

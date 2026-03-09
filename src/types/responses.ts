@@ -45,6 +45,7 @@ export interface TournamentResponse {
   year: number;
   isOfficial: boolean;
   isTwos: boolean;
+  isOnline: boolean;
   startTime: number;
   host: "SGG" | "CM";
 }
